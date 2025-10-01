@@ -3,1030 +3,279 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guess Master Protocol</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700&display=swap" rel="stylesheet">
+    <title>Aarav Sinha Protocols - Index</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
-        /* --- Root Variables for Dark Mode (Default) --- */
+        /* --- Root Variables (Copy from Game Page) --- */
         :root {
-            --color-primary: #3f68a8;       /* Muted Blue */
-            --color-secondary: #00bcd4;     /* Cyan Accent */
-            --color-accent: #ff9800;        /* Gold/Orange Accent */
-            --color-error: #f44336;
-            --color-success: #8bc34a;
-            --color-text: #e0e6f0;
-            --box-background: rgba(25, 35, 55, 0.6); 
-            --modal-bg: #101a2e; 
-            --modal-header: var(--color-accent); 
+            --color-primary: #004d40;       /* Deep Emerald Green */
+            --color-secondary: #00e5ff;     /* Vibrant Cyan (Highlight) */
+            --color-accent: #00ff80;        /* Neon Green (Target) */
+            --color-error: #ff3d00;         /* High-Contrast Red */
+            --color-text-dark: #333;
+            --color-text-light: #e0f7fa;    /* Pale Cyan Text */
+            /* UPDATED BACKGROUND: Deep crimson/black gradient for unique index look */
+            --body-bg: linear-gradient(135deg, #721644, #0a0a0a, #721644); 
+            --card-bg: #1f2532; 
         }
 
-        /* --- Light Mode Overrides --- */
-        body.light-mode {
-            /* Brighter, more vibrant background gradient */
-            background: linear-gradient(135deg, #ffffff, #c7e0ff, #ffffff); 
-            background-size: 400% 400%;
-            color: #333; 
-
-            --color-primary: #5c7fa9;       /* Medium Blue for Buttons/Accents */
-            --color-secondary: #008c99;     /* Darker Cyan for Text Contrast */
-            --color-accent: #e65100;        /* Darker Orange for Header/Accent */
-            --color-error: #c62828;
-            --color-success: #4caf50;
-            --color-text: #333;
-            --box-background: rgba(255, 255, 255, 0.85); 
-            --modal-bg: #f5f8ff; 
-            --modal-header: var(--color-accent);
-        }
-        
         body {
             margin: 0;
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
             font-family: 'Montserrat', sans-serif;
-            /* Dark Mode Gradient */
-            background: linear-gradient(135deg, #1f4037, #991c49, #4a00e0, #2b32b2);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
-            color: var(--color-text);
-            overflow: hidden; 
+            background: var(--body-bg); /* Now uses the new crimson gradient */
+            color: var(--color-text-light);
+            padding: 40px 20px;
             transition: color 0.3s, background 0.3s;
         }
 
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+        /* --- Light Mode Overrides for Index --- */
+        body.light-mode {
+            background: linear-gradient(135deg, #f0f0f0, #ffffff); 
+            color: var(--color-text-dark); 
+
+            --color-primary: #4db6ac;       
+            --color-secondary: #0097a7;     
+            --color-accent: #388e3c;        
+            --color-text-light: #333;
+            --card-bg: #e0e0e0;
         }
 
-        /* --- High Score Banner FIX --- */
-        #highScoreBanner {
-            position: fixed;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%) translateY(-100%);
-            background: var(--color-success);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 0 0 10px 10px;
-            font-size: 16px;
+        /* --- HEADER --- */
+        #header {
+            text-align: center;
+            margin-bottom: 50px;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        #header h1 {
+            font-size: 36px;
             font-weight: 700;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-            z-index: 200;
-            opacity: 0; /* Ensures it starts invisible */
-            visibility: hidden; /* FIX: Prevents layout interference */
-            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            color: var(--color-secondary);
+            text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        #header p {
+            font-size: 16px;
+            color: rgba(0, 255, 128, 0.8);
             letter-spacing: 1px;
         }
-
-        #highScoreBanner.active {
-            transform: translateX(-50%) translateY(0);
-            opacity: 1;
-            visibility: visible;
+        
+        /* Light Mode Header Adjustment */
+        body.light-mode #header h1 {
+            color: var(--color-secondary);
+            text-shadow: none;
+        }
+        body.light-mode #header p {
+            color: var(--color-text-dark);
         }
 
-        #game-box {
-            background: var(--box-background);
-            backdrop-filter: blur(18px); 
-            border-radius: 15px; 
-            border: 1px solid rgba(255, 255, 255, 0.1); 
-            padding: 35px 45px;
-            width: 350px; 
-            box-shadow: 0 0 50px rgba(0,0,0,0.7); 
+        /* --- GALLERY GRID --- */
+        #gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            width: 100%;
+            max-width: 1200px;
+            margin-bottom: 50px;
+        }
+
+        .game-card {
+            background: var(--card-bg);
+            border: 2px solid var(--color-secondary);
+            border-radius: 10px;
+            padding: 25px;
             text-align: center;
-            position: relative; 
-            height: auto; 
-            overflow: hidden; 
-            transition: all 0.3s ease;
-            z-index: 1; 
+            box-shadow: 0 0 20px rgba(0, 229, 255, 0.1);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s;
+            text-decoration: none; 
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
-        body.light-mode #game-box {
-            box-shadow: 0 0 30px rgba(0,0,0,0.15); 
-            border: 1px solid rgba(0, 0, 0, 0.1);
+
+        .game-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 229, 255, 0.4);
+            border-color: var(--color-accent);
+        }
+
+        .game-card h3 {
+            font-size: 22px;
+            color: var(--color-accent);
+            margin-top: 0;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .game-card p.tagline {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 15px;
+            min-height: 40px; 
+            font-weight: 300;
         }
         
-        h2 {
-            margin-bottom: 5px;
-            font-size: 26px;
-            font-weight: 700;
-            letter-spacing: 2px;
-            color: var(--color-text);
-            text-shadow: 0 0 10px rgba(0, 188, 212, 0.5); 
+        /* Light Mode Card Adjustments */
+        body.light-mode .game-card {
+            border-color: var(--color-primary);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
-        body.light-mode h2 {
-            text-shadow: none;
+        body.light-mode .game-card:hover {
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            border-color: var(--color-secondary);
+        }
+        body.light-mode .game-card h3 {
             color: var(--color-primary);
         }
-        
-        #high-score-display {
-            font-size: 13px;
-            font-weight: 500;
-            margin-bottom: 30px;
-            color: var(--color-secondary);
-            text-transform: uppercase;
+        body.light-mode .game-card p.tagline {
+            color: var(--color-text-dark);
         }
 
-        label {
-            font-size: 14px;
-            display: block;
-            margin: 18px 0 10px;
-            font-weight: 500;
-            color: var(--color-text);
-            opacity: 0.8;
-        }
-        body.light-mode label {
-            color: #333;
-            opacity: 1;
-        }
 
-        input[type="number"] {
-            padding: 14px;
-            width: 85%;
-            margin: 0 auto 25px;
-            border-radius: 8px;
-            border: none;
-            outline: none;
-            font-size: 18px;
+        /* --- STATUS BADGE --- */
+        .status-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
             font-weight: 700;
-            text-align: center;
-            background: rgba(255, 255, 255, 0.05); 
-            color: var(--color-text);
-            box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
-            transition: all 0.2s ease;
-            max-width: 250px;
-        }
-        body.light-mode input[type="number"] {
-            background: #fff;
-            color: #333;
-            box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
-            border: 1px solid #ddd;
-        }
-
-        /* Standard Button */
-        button {
-            background: var(--color-primary);
-            border: none;
-            padding: 12px 22px;
-            margin: 8px 6px;
-            border-radius: 8px;
-            color: #fff;
-            font-size: 15px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: 0.3s ease;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            margin-top: 15px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            min-width: 120px;
+            letter-spacing: 1px;
+            align-self: flex-start; 
+            margin-left: 0;
         }
-        body.light-mode button {
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-        }
-        
-        /* --- Toggles and Setting Rows --- */
-        .setting-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-            max-width: 280px;
-            margin: 5px auto;
-            padding: 8px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        body.light-mode .setting-row {
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-        }
-        .setting-row:last-of-type { border-bottom: none; }
 
-        /* FIX: Ensure Inverse Toggle and Theme/Sound Toggles are visible */
-        .setting-row input[type="checkbox"] {
-            /* Custom Toggle Switch Styles */
-            width: 40px; height: 20px; border-radius: 10px; position: relative;
-            cursor: pointer; transition: background-color 0.3s; box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
-            appearance: none; background-color: #ccc;
+        .status-badge.live {
+            background: var(--color-accent);
+            color: var(--color-primary); 
         }
-        .setting-row input[type="checkbox"]:checked { background-color: var(--color-success); }
-        .setting-row input[type="checkbox"]::before {
-            content: ''; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px;
-            border-radius: 50%; background-color: white; transition: transform 0.3s;
-        }
-        .setting-row input[type="checkbox"]:checked::before { transform: translateX(20px); }
-        
-        /* Specific override for the input inside the setting-row (like inverseToggle) */
-        #game-box .setting-row input[type="checkbox"] {
-            margin: 0; /* Remove previous margin rules for the input[type="number"] */
-        }
-        
 
-        /* --- FIXED BUTTONS (RULE & HISTORY) --- */
-        .fixed-btn {
-            position: fixed; background: var(--color-primary);
-            border: none; padding: 10px 18px; border-radius: 8px; color: #fff;
-            font-size: 14px; font-weight: 600; cursor: pointer; transition: 0.2s ease;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index: 101; margin: 0;
-            text-transform: uppercase;
+        .status-badge.classic {
+            background: #bdbdbd; /* Gray */
+            color: var(--color-text-dark);
+        }
+
+        .status-badge.new {
+            background: var(--color-secondary);
+            color: var(--color-text-dark);
         }
         
-        /* Right Side Buttons (Rules, History) */
-        #infoBtn { top: 20px; right: 20px; }
-        #historyBtn { top: 75px; right: 20px; background: var(--color-accent); display: none; }
-
-        /* --- FLOATING ICONS (BOTTOM RIGHT) --- */
-        .floating-icon {
+        /* --- Footer/Toggle --- */
+        #footer-controls {
             position: fixed;
-            bottom: 20px; 
-            width: 50px; height: 50px; 
-            border-radius: 50%;
-            background: var(--modal-header); 
-            color: white;
-            line-height: 50px;
-            text-align: center;
-            cursor: pointer;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-            transition: transform 0.2s, background 0.2s;
-            z-index: 150;
-            font-size: 28px;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
         }
-        .floating-icon:hover { transform: scale(1.05); }
-
-        #settingsIcon { right: 20px; font-size: 28px; }
-        #settingsIcon:hover { transform: scale(1.05) rotate(30deg); }
-        #supportIcon { right: 80px; font-size: 24px; background: var(--color-primary); }
-        #supportIcon:hover { background: #335999; }
-
-        /* --- FIXED PANELS (Rules and History) --- */
-        .fixed-panel-common {
-            position: fixed; top: 65px; right: 20px; width: 300px; 
-            background: rgba(0, 0, 0, 0.9); border-radius: 10px; padding: 20px; 
-            text-align: left; font-size: 14px; line-height: 1.6; 
-            color: var(--color-text); z-index: 100; opacity: 0; 
-            visibility: hidden; transition: 0.3s ease; 
-            box-shadow: 0 5px 20px rgba(0,0,0,0.8);
-            transform: translateX(100%); 
-        }
-        body.light-mode .fixed-panel-common {
-            background: rgba(255, 255, 255, 0.9);
-            color: #333;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
-        }
-
-        .fixed-panel-common.visible { opacity: 1; visibility: visible; transform: translateX(0); }
-        #instructions { border-left: 3px solid var(--color-secondary); }
-        #historyPanel { top: 120px; max-height: 400px; padding: 15px; border-left: 3px solid var(--color-accent); }
         
-        /* --- MODAL STRUCTURE (Settings and Support) --- */
-        .floating-modal {
-            position: fixed; bottom: 90px; width: 350px; height: 400px; 
-            background: var(--modal-bg); border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.8);
-            border: 1px solid rgba(255, 255, 255, 0.1); z-index: 140; display: flex;
-            flex-direction: column; opacity: 0; visibility: hidden;
-            transform: translateY(20px) scale(0.95); transition: all 0.3s ease-out;
-            transform-origin: bottom right;
-            color: var(--color-text);
+        .fixed-control-btn { 
+            background: var(--color-primary); 
+            border: 1px solid var(--color-accent); 
+            padding: 10px 18px; 
+            border-radius: 5px; 
+            color: var(--color-accent); 
+            font-size: 16px; 
+            font-weight: 600; 
+            cursor: pointer; 
+            transition: 0.2s ease; 
+            box-shadow: 0 0 5px rgba(0, 255, 128, 0.5); 
+            text-transform: none;
         }
-        body.light-mode .floating-modal {
-            background: var(--modal-bg);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-            border: 1px solid rgba(0, 0, 0, 0.1);
-        }
-        .floating-modal.visible { opacity: 1; visibility: visible; transform: translateY(0) scale(1); }
+        .fixed-control-btn:hover { background: #00796b; box-shadow: 0 0 10px var(--color-accent); }
         
-        #settingsModal { right: 20px; }
-        #supportModal { right: 80px; }
-        
-        .modal-header {
-            background: var(--modal-header); color: white; padding: 10px 15px; 
-            border-top-left-radius: 10px; border-top-right-radius: 10px; font-size: 15px; 
-            font-weight: 700; display: flex; justify-content: space-between; align-items: center;
+        /* Light Mode Button Styling */
+        body.light-mode .fixed-control-btn {
+            background: var(--color-secondary);
+            color: var(--color-text-dark);
+            border-color: var(--color-primary);
+            box-shadow: none;
         }
-        #supportModal .modal-header { background: var(--color-primary); }
 
-        .modal-body { flex-grow: 1; overflow-y: auto; padding: 10px 15px; display: flex; flex-direction: column; }
-        .modal-body::-webkit-scrollbar { width: 4px; }
-        .modal-body::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 10px; }
-        body.light-mode .modal-body::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.2); }
-
-        /* Chat Specific Styles */
-        .ai-message { background: #283655; align-self: flex-start; padding: 8px 10px; border-radius: 8px; margin-bottom: 8px; font-size: 13px; line-height: 1.4; max-width: 85%; }
-        body.light-mode .ai-message { background: #e0e9f5; color: #333; }
-        .ai-message strong { color: var(--color-secondary); }
-
-        .user-message { background: var(--color-primary); align-self: flex-end; text-align: right; padding: 8px 10px; border-radius: 8px; margin-bottom: 8px; font-size: 13px; line-height: 1.4; max-width: 85%; color: #fff; }
-        
-        .chat-option-btn-container { width: 100%; margin: 5px 0 10px 0;}
-        .chat-option-btn { background: #334466; color: #fff; display: block; width: 100%; margin: 5px 0; padding: 10px; border: none; border-radius: 4px; font-size: 13px; cursor: pointer; transition: background 0.2s; text-align: left; }
-        body.light-mode .chat-option-btn { background: #ccd6e8; color: #333; }
-        body.light-mode .chat-option-btn:hover { background: var(--color-primary); color: #fff; }
-
-        /* Footer */
-        #footer {
-            position: fixed; bottom: 15px; width: 100%; text-align: center; font-size: 13px;
-            color: rgba(255, 255, 255, 0.7); letter-spacing: 1.5px; z-index: 50;
-        }
-        body.light-mode #footer {
-            color: rgba(0, 0, 0, 0.7);
+        /* Mobile adjustments */
+        @media (max-width: 600px) {
+            #header h1 { font-size: 28px; }
+            #header p { font-size: 14px; }
+            #footer-controls { right: 10px; bottom: 10px; }
+            .fixed-control-btn { padding: 8px 15px; font-size: 14px; }
         }
     </style>
 </head>
 <body class="dark-mode">
-    
-    <div id="highScoreBanner">New High Score Unlocked! 🏅</div>
 
-    <button id="infoBtn" class="fixed-btn">Protocol | RULES</button>
-    <button id="historyBtn" class="fixed-btn">📊 VIEW LOG</button>
-    
-    <div id="settingsIcon" class="floating-icon" onclick="toggleSettingsModal()">⚙️</div>
-    <div id="supportIcon" class="floating-icon" onclick="toggleSupportModal()">💬</div>
-    
-    
-    <div id="instructions" class="fixed-panel-common">
-        <strong>PROTOCOL GUIDELINES</strong><br>
-        <p>Your objective is to deduce the **secret 2-digit number** (1 to 100) generated by the central system.</p>
-        <ul>
-            <li>**Difficulty:** Set the number of attempts (1-20) before activation.</li>
-            <li>**Inverse Mode:** Reverses the "HIGH/LOW" directional hints.</li>
-            <li>**Feedback Loop:** The system provides real-time feedback (Too High/Low, Almost) to guide your next input.</li>
-        </ul>
-        <hr style="border-color: rgba(255,255,255,0.2); margin-top: 15px;">
-        <small style="display: block; text-align: center; color: var(--color-text);">System developed by **Aarav Sinha**</small>
+    <div id="header">
+        <h1>Aarav Sinha | Protocol System Index</h1>
+        <p>A suite of aesthetic challenges designed to test your precision, memory, and speed.</p>
     </div>
 
-    <div id="historyPanel" class="fixed-panel-common">
-        <h3>GUESS LOG (Newest First)</h3>
-        <div id="guesses-list">No attempts logged yet.</div>
-    </div>
+    <div id="gallery-grid">
 
+        <a href="Precision.html" class="game-card"> 
+            <span class="status-badge live">LIVE</span>
+            <div>
+                <h3>🎯 Precision Stop Protocol</h3>
+                <p class="tagline">Master the Millisecond. Execute the stop command with $\le 50$ ms accuracy.</p>
+            </div>
+        </a>
 
-    <div id="settingsModal" class="floating-modal">
-        <div class="modal-header">
-            <span>⚙️ SYSTEM SETTINGS</span>
-            <button class="chat-close-btn" onclick="closeSettingsModal()">✕</button>
-        </div>
-        <div class="modal-body">
-            <h4>INTERFACE PREFERENCES</h4>
-            
-            <div class="setting-row">
-                <label for="themeToggle">Light Mode</label>
-                <input type="checkbox" id="themeToggle">
+        <a href="GuessNum.html" class="game-card">
+            <span class="status-badge classic">CLASSIC</span>
+            <div>
+                <h3>🔢 Guess Master Protocol</h3>
+                <p class="tagline">Decipher the sequence. A number guessing challenge with advanced feedback modes.</p>
             </div>
-            
-            <div class="setting-row">
-                <label for="soundToggle">Sound Effects</label>
-                <input type="checkbox" id="soundToggle">
-            </div>
-            
-            <p style="text-align: center; font-size: 12px; opacity: 0.7; margin-top: 20px;">*Changes are applied instantly.</p>
-        </div>
-    </div>
+        </a>
 
-    <div id="supportModal" class="floating-modal">
-        <div class="modal-header">
-            <span>💬 AI Assistant: Cipher Support</span>
-            <button class="chat-close-btn" onclick="closeSupportModal()">✕</button>
-        </div>
-        <div id="supportBody" class="modal-body">
+        <a href="ColourSeq.html" class="game-card">
+            <span class="status-badge new">NEW</span>
+            <div>
+                <h3>💡 Colour Sequence Protocol</h3>
+                <p class="tagline">Recall the pattern. Test your short-term visual memory and focus.</p>
             </div>
+        </a>
         
-        <div id="support-menu-options-template" style="display:none;">
-            <button class="chat-option-btn" onclick="handleMenuSelection('stats', this)">📈 Check Protocol Metrics (Stats)</button>
-            <button class="chat-option-btn" onclick="handleMenuSelection('faq', this)">❓ Review Support FAQ</button>
-            <button class="chat-option-btn" onclick="handleMenuSelection('lore', this)">🌐 Read Mission Briefing (Lore)</button>
-        </div>
-
-
-        <div id="supportContentArea" style="display: none;">
-            
-            <div id="statsPanelContent" class="chat-info-panel">
-                <h4>PROTOCOL METRICS</h4>
-                <p>Games Played: <span id="stat-games">0</span></p>
-                <p>Total Wins: <span id="stat-wins">0</span></p>
-                <p>Win Rate: <span id="stat-winrate">0%</span></p>
-                <p>Current Streak: <span id="stat-streak">0</span></p>
-                <p>Longest Streak: <span id="stat-max-streak">0</span></p>
-                
-                <button onclick="resetHighScoreOnly()" style="background: var(--color-accent); margin-top: 15px; width: 100%;">RESET HIGH SCORE ONLY</button>
-                <button onclick="resetAllStats()" style="background: var(--color-error); margin-top: 8px; width: 100%;">WIPE ALL DATA</button>
+        <a href="ReactionTest.html" class="game-card">
+            <span class="status-badge live">LIVE</span>
+            <div>
+                <h3>⚡ Reaction Test Protocol</h3>
+                <p class="tagline">Measure the impulse. Click instantly when the system signals the go command.</p>
             </div>
+        </a>
 
-            <div id="faqPanelContent" class="chat-info-panel">
-                <h4>SUPPORT FAQ</h4>
-                <p class="faq-q">Q: How is the High Score calculated?</p>
-                <p class="faq-a">A: The High Score tracks your **fewest guesses** to successfully crack the code. Lower is better!</p>
-                
-                <p class="faq-q">Q: Why did I lose my Win Streak?</p>
-                <p class="faq-a">A: Your streak resets to zero if you fail to guess the code within the allotted attempts or if you manually click the RESET button.</p>
-
-                <p class="faq-q">Q: Is the secret code truly random?</p>
-                <p class="faq-a">A: Yes. The system uses a standard JavaScript function to generate a cryptographically weak (but practically random) number between 1 and 100.</p>
-                <p class="faq-q" style="color: var(--color-secondary); margin-top: 15px;">**TECHNICAL SUPPORT**</p>
-                <p class="faq-a">For immediate support, please WhatsApp our help desk at: **77189 78934**</p>
-            </div>
-
-            <div id="lorePanelContent" class="chat-info-panel">
-                <h4>MISSION BRIEFING</h4>
-                <p style="font-style: italic;">"You are a User. The "Guess Master" is not a game; it is a live decryption simulation. Your goal is to breach the target integer ('The Secret Code') before the attempt count is exhausted.</p>
-                <p>Failure to adhere to the Attempt Status results in immediate system self-wipe. Good luck! The integrity of the network depends on your deduction skills."</p>
-            </div>
-        </div>
     </div>
 
-
-    <div id="game-box">
-        <h2>🔬 Guess Master</h2>
-        
-        <p id="high-score-display">🏅 BEST SCORE: N/A</p>
-        
-        <div> 
-            
-            <label for="maxGuesses">Set Attempts (1 to 20):</label>
-            <input type="number" id="maxGuesses" min="1" max="20" placeholder="E.g., 7" value="7">
-
-            <div class="setting-row" style="margin: 5px auto 25px auto; max-width: 300px; border-bottom: none;">
-                <label for="inverseToggle" style="margin-bottom: 0;">🔄 Inverse Feedback Mode (Advanced)</label>
-                <input type="checkbox" id="inverseToggle"> 
-            </div>
-            
-            <button id="startBtn" onclick="startGame()">▶️ ACTIVATE PROTOCOL</button>
-            
-            <div id="game" style="display:none;">
-                <p><b>Attempt Status:</b> <span id="attempt">0</span> / <span id="max"></span></p>
-                
-                <label for="guess">Enter Secret Code (1-100):</label>
-                <input type="number" id="guess" placeholder="Your Guess">
-                
-                <button id="submitBtn" onclick="checkGuess()">✔️ SUBMIT CODE</button>
-                <button id="restartBtn" onclick="restartGame()">RESET</button>
-                
-                <div class="msg" id="message"></div>
-            </div>
-        </div> 
+    <div id="footer-controls">
+        <button id="themeToggleBtn" class="fixed-control-btn" onclick="toggleTheme()">☀️ Toggle Theme</button>
     </div>
-    
-    <div id="footer">
-        Developed & Branded by Aarav Sinha
-    </div>
+
     <script>
-        let randomNumber, attempts, maxAttempts, gameActive, inverseModeActive;
-        let confettiInterval;
-        let redirectTimer; 
-        
-        let chatHistory = []; 
-        
-        let stats = {
-            gamesPlayed: 0,
-            wins: 0,
-            winStreak: 0,
-            longestStreak: 0,
-            soundEnabled: true,
-            theme: 'dark' 
-        };
-
         const body = document.body;
-        const highScoreDisplay = document.getElementById("high-score-display");
-        const messageElement = document.getElementById("message");
-        const historyList = document.getElementById("guesses-list");
+        const themeToggleBtn = document.getElementById('themeToggleBtn');
         
-        const instructionsBox = document.getElementById("instructions");
-        const historyPanel = document.getElementById("historyPanel");
-        
-        const infoButton = document.getElementById("infoBtn");
-        const historyButton = document.getElementById("historyBtn");
-        
-        const guessInput = document.getElementById("guess");
-        const submitButton = document.getElementById("submitBtn");
+        function toggleTheme() {
+            body.classList.toggle('light-mode');
+            const isLight = body.classList.contains('light-mode');
+            themeToggleBtn.innerText = isLight ? '🌙 Toggle Theme' : '☀️ Toggle Theme';
+        }
 
-        const inverseToggle = document.getElementById("inverseToggle");
-        
-        const settingsModal = document.getElementById("settingsModal");
-        const supportModal = document.getElementById("supportModal");
-        const supportBody = document.getElementById("supportBody");
-        const supportMenuTemplate = document.getElementById("support-menu-options-template");
-
-        const infoPanels = {
-            stats: document.getElementById('statsPanelContent'),
-            faq: document.getElementById('faqPanelContent'),
-            lore: document.getElementById('lorePanelContent')
-        };
-        
-        // --- Setting Toggles ---
-        const soundToggle = document.getElementById('soundToggle');
-        const themeToggle = document.getElementById('themeToggle');
-
-
-        // --- STATS, HIGH SCORE, & THEME FUNCTIONS ---
-        
-        function applyTheme(theme) {
-            if (theme === 'light') {
-                body.classList.add('light-mode');
-                themeToggle.checked = true; 
+        // Initialize button text based on current theme
+        window.onload = function() {
+            // Check for saved theme preference (optional: enhance by using localStorage)
+            if (body.classList.contains('light-mode')) {
+                themeToggleBtn.innerText = '🌙 Toggle Theme';
             } else {
-                body.classList.remove('light-mode');
-                themeToggle.checked = false;
+                themeToggleBtn.innerText = '☀️ Toggle Theme';
             }
-        }
-
-        function loadStats() {
-            const bestScore = localStorage.getItem('guessNumberHighScore');
-            highScoreDisplay.innerText = bestScore ? `🏅 BEST SCORE: ${bestScore} GUESSES` : `🏅 BEST SCORE: N/A`;
-
-            const savedStats = localStorage.getItem('guessNumberStats');
-            if (savedStats) {
-                stats = {...stats, ...JSON.parse(savedStats)};
-            }
-            
-            soundToggle.checked = stats.soundEnabled;
-            // Apply theme on load
-            applyTheme(stats.theme); 
-            
-            updateStatsDisplay();
-        }
-
-        function saveStats() {
-            // Save theme preference based on toggle state
-            stats.theme = themeToggle.checked ? 'light' : 'dark';
-            localStorage.setItem('guessNumberStats', JSON.stringify(stats));
-            updateStatsDisplay();
-        }
-
-        function updateStatsDisplay() {
-            document.getElementById("stat-games").innerText = stats.gamesPlayed;
-            document.getElementById("stat-wins").innerText = stats.wins;
-            document.getElementById("stat-streak").innerText = stats.winStreak;
-            document.getElementById("stat-max-streak").innerText = stats.longestStreak;
-            
-            const winRate = stats.gamesPlayed === 0 ? 0 : ((stats.wins / stats.gamesPlayed) * 100).toFixed(1);
-            document.getElementById("stat-winrate").innerText = `${winRate}%`;
-        }
-
-        window.resetHighScoreOnly = function() {
-            if (confirm("⚠️ SECURITY PROTOCOL: Are you sure you want to wipe ONLY the High Score? All other statistics (Wins, Streak) will remain.")) {
-                localStorage.removeItem('guessNumberHighScore');
-                loadStats(); 
-                restartGame();
-            }
-        }
-
-        window.resetAllStats = function() {
-            if (confirm("⚠️ SECURITY PROTOCOL: Are you sure you want to wipe ALL game statistics (High Score, Stats, and Streaks)? This action cannot be undone.")) {
-                localStorage.removeItem('guessNumberHighScore');
-                localStorage.removeItem('guessNumberStats');
-                localStorage.removeItem('guessNumberChatHistory'); 
-                
-                const currentSoundSetting = stats.soundEnabled;
-                const currentThemeSetting = stats.theme; 
-                
-                stats = { gamesPlayed: 0, wins: 0, winStreak: 0, longestStreak: 0, soundEnabled: currentSoundSetting, theme: currentThemeSetting };
-                loadStats();
-                restartGame();
-            }
-        }
-        
-        function handleThemeChange() {
-            const newTheme = themeToggle.checked ? 'light' : 'dark';
-            applyTheme(newTheme);
-            saveStats();
-        }
-
-        function handleSoundChange() {
-            stats.soundEnabled = soundToggle.checked;
-            saveStats();
-        }
-
-        // --- Event Listeners for Settings ---
-        themeToggle.addEventListener('change', handleThemeChange);
-        soundToggle.addEventListener('change', handleSoundChange);
-        loadStats();
-        // -------------------------------------
-        
-        // --- MODAL CONTROL FUNCTIONS ---
-
-        function closeAllFloatingPanels() {
-            settingsModal.classList.remove('visible');
-            supportModal.classList.remove('visible');
-            instructionsBox.classList.remove('visible');
-            historyPanel.classList.remove('visible');
-        }
-
-        window.toggleSettingsModal = function() {
-            closeAllFloatingPanels();
-            settingsModal.classList.toggle('visible');
-        }
-
-        window.closeSettingsModal = function() {
-            settingsModal.classList.remove('visible');
-        }
-
-        window.toggleSupportModal = function() {
-            closeAllFloatingPanels();
-            supportModal.classList.toggle('visible');
-            
-            if (supportModal.classList.contains('visible')) {
-                greetAndShowMenu(); 
-            }
-        }
-
-        window.closeSupportModal = function() {
-            supportModal.classList.remove('visible');
-        }
-        
-        // --- CHAT/SUPPORT LOGIC FUNCTIONS ---
-
-        function saveChatHistory() {
-            localStorage.setItem('guessNumberChatHistory', JSON.stringify(chatHistory));
-        }
-
-        function renderChatHistory() {
-            supportBody.innerHTML = ''; 
-            chatHistory.forEach(msg => {
-                const msgDiv = document.createElement("div");
-                msgDiv.className = msg.sender === 'user' ? 'user-message' : 'ai-message';
-                msgDiv.innerHTML = msg.text; 
-                supportBody.appendChild(msgDiv);
-                
-                // If it's an AI message and has an associated menu, append the buttons below the text.
-                if (msg.sender === 'ai' && msg.menuHtml) {
-                    const menuContainer = document.createElement('div');
-                    menuContainer.className = 'chat-option-btn-container';
-                    menuContainer.innerHTML = msg.menuHtml;
-                    supportBody.appendChild(menuContainer);
-                }
-            });
-            supportBody.scrollTop = supportBody.scrollHeight;
-        }
-
-        function greetAndShowMenu() {
-            chatHistory = [];
-            const greeting = "Greetings, User! I am the **Cipher Support AI**. How can I assist you? (Use the ⚙️ icon for settings)";
-            
-            // Store the greeting text and the menu HTML separately
-            const menuHtml = supportMenuTemplate.innerHTML;
-            chatHistory.push({ sender: 'ai', text: greeting, menuHtml: menuHtml });
-
-            saveChatHistory();
-            renderChatHistory();
-        }
-        
-        window.returnToMainMenu = function() {
-            let prompt = "Please select another topic from the main menu below, or close the assistant.";
-            const menuHtml = supportMenuTemplate.innerHTML;
-            
-            // Add a temporary message to show typing
-            chatHistory.push({ sender: 'ai', text: "...", menuHtml: null });
-            renderChatHistory();
-            chatHistory.pop(); 
-            
-            chatHistory.push({ sender: 'ai', text: prompt, menuHtml: menuHtml });
-            
-            saveChatHistory();
-            renderChatHistory();
-        }
-
-        function getAiResponseForPanel(panelName) {
-            let panel = infoPanels[panelName];
-            if (!panel) return "Error: Could not retrieve information for this selection.";
-            
-            const tempDiv = document.createElement('div');
-            tempDiv.appendChild(panel.cloneNode(true));
-            
-            let content = tempDiv.innerHTML
-                .replace(/<h4[^>]*>/gi, '<strong>')
-                .replace(/<\/h4>/gi, '</strong>\n')
-                .replace(/<p[^>]*>/gi, '\n<p>')
-                .replace(/<\/p>/gi, '</p>\n')
-                .replace(/<ul[^>]*>/gi, '\n<ul>')
-                .replace(/<\/ul>/gi, '</ul>\n')
-                .replace(/<li[^>]*>/gi, '• ')
-                .replace(/<\/li>/gi, '\n')
-                .replace(/<div[^>]*>/gi, '') 
-                .replace(/<\/div>/gi, '')
-                .replace(/<input[^>]*>/gi, '[TOGGLE]') 
-                .replace(/<label[^>]*>/gi, '')
-                .replace(/<\/label>/gi, ' ')
-                .replace(/\n\s*\n/g, '\n\n')
-                .trim();
-
-            // Extract the buttons separately to place them at the end.
-            const buttonContainer = document.createElement('div');
-            const buttons = panel.querySelectorAll('button');
-            buttons.forEach(btn => buttonContainer.appendChild(btn.cloneNode(true)));
-            
-            // The back button should always be present at the end of the panel content
-            const backButtonHtml = `<button style="background: #333; margin-top: 10px; width: 100%; text-transform: none; font-weight: 500; padding: 8px;" onclick="returnToMainMenu()">← RETURN TO MAIN MENU</button>`;
-            
-            return content + buttonContainer.innerHTML + backButtonHtml;
-        }
-        
-        window.handleMenuSelection = function(panelName, buttonElement) {
-            const userText = buttonElement.innerText.trim();
-            chatHistory.push({ sender: 'user', text: userText, menuHtml: null });
-            const aiResponseText = getAiResponseForPanel(panelName);
-            
-            // Add a temporary message to show typing
-            chatHistory.push({ sender: 'ai', text: "...", menuHtml: null });
-            renderChatHistory();
-            chatHistory.pop(); 
-
-            setTimeout(() => {
-                // The AI response now contains the formatted content AND the buttons
-                chatHistory.push({ sender: 'ai', text: aiResponseText, menuHtml: null });
-                saveChatHistory();
-                renderChatHistory();
-            }, 300);
-        }
-        
-        // --- GAME LOGIC FUNCTIONS ---
-        
-        function playFeedbackSound(type) {
-            if (!stats.soundEnabled) return;
-            console.log(`[SOUND EFFECT: ${type}]`);
-        }
-        
-        function showNewHighScoreBanner() {
-            const banner = document.getElementById("highScoreBanner");
-            // Reset state to ensure animation plays
-            banner.classList.remove('active'); 
-            void banner.offsetWidth; // Force reflow
-            banner.classList.add('active'); 
-            
-            // The banner's CSS now controls its visibility/opacity via the 'active' class
-            
-            setTimeout(() => {
-                banner.classList.remove('active');
-            }, 5000); 
-        }
-
-
-        function startGame() {
-            clearTimersAndEffects();
-            maxAttempts = parseInt(document.getElementById("maxGuesses").value);
-            inverseModeActive = inverseToggle.checked;
-
-            if (isNaN(maxAttempts) || maxAttempts < 1 || maxAttempts > 20) {
-                messageElement.innerText = "⚠️ PROTOCOL ALERT: Please set attempts between 1 and 20.";
-                messageElement.className = 'msg error';
-                playFeedbackSound('error');
-                return;
-            }
-            
-            playFeedbackSound('start');
-            randomNumber = Math.floor(Math.random() * 100) + 1;
-            attempts = 0;
-            gameActive = true;
-            
-            document.getElementById("game").style.display = "block";
-            document.getElementById("max").innerText = maxAttempts;
-            document.getElementById("attempt").innerText = attempts;
-            
-            messageElement.innerText = "🎮 Protocol Activated. Awaiting first input...";
-            
-            if (inverseModeActive) {
-                 messageElement.innerText = "🔄 INVERSE MODE ACTIVE. All directional hints are reversed. Good luck.";
-            }
-
-            messageElement.className = 'msg';
-            guessInput.value = "";
-            guessInput.focus();
-
-            // Disable setup controls
-            document.getElementById("maxGuesses").setAttribute("disabled", true);
-            inverseToggle.setAttribute("disabled", true); 
-            document.getElementById("startBtn").style.display = "none";
-            
-            // Hide floating icons
-            document.getElementById("settingsIcon").style.display = "none";
-            document.getElementById("supportIcon").style.display = "none";
-            document.getElementById("infoBtn").style.display = "none";
-            
-            // Show history
-            document.getElementById("historyBtn").style.display = "inline-block";
-            
-            guessInput.removeAttribute("disabled");
-            submitButton.removeAttribute("disabled");
-            
-            historyList.innerHTML = "No attempts logged yet.";
-            closeAllFloatingPanels(); // Ensure all panels are closed
-            
-            stats.gamesPlayed++;
-            saveStats();
-        }
-
-        function checkGuess() {
-            if (!gameActive) return;
-
-            const guess = parseInt(guessInput.value);
-            messageElement.className = 'msg'; 
-
-            if (isNaN(guess) || guess < 1 || guess > 100) {
-                messageElement.innerText = "⚠️ Input Error: Code must be between 1 and 100.";
-                messageElement.classList.add('error');
-                playFeedbackSound('error');
-                return;
-            }
-
-            attempts++;
-            document.getElementById("attempt").innerText = attempts;
-
-            let colorClass = '';
-            let hintText = '';
-            let feedbackIcon = '';
-            let gameEnded = false;
-            let proximity = Math.abs(guess - randomNumber);
-
-            if (guess === randomNumber) {
-                colorClass = 'win';
-                hintText = "SUCCESS!";
-                feedbackIcon = '🏆';
-                messageElement.innerText = `✅ SUCCESS! Target acquired in ${attempts} attempts. Mission complete.`;
-                gameEnded = true;
-                playFeedbackSound('win');
-                
-                stats.wins++;
-                stats.winStreak++;
-                if (stats.winStreak > stats.longestStreak) {
-                    stats.longestStreak = stats.winStreak;
-                }
-                
-                const currentHighScore = parseInt(localStorage.getItem('guessNumberHighScore')) || Infinity;
-                if (attempts < currentHighScore) {
-                    localStorage.setItem('guessNumberHighScore', attempts);
-                    loadStats();
-                    messageElement.innerText += " (NEW RECORD)";
-                    showNewHighScoreBanner(); 
-                }
-                
-                startConfetti();
-
-            } else if (attempts >= maxAttempts) {
-                colorClass = 'lose';
-                hintText = "FAILURE";
-                feedbackIcon = '❌';
-                messageElement.innerText = `❌ FAILURE. Secret code was ${randomNumber}. Resetting system...`;
-                gameEnded = true;
-                playFeedbackSound('lose');
-
-                stats.winStreak = 0;
-                
-            } else { // Handle feedback for non-win/loss states
-                
-                let trueDirection = guess > randomNumber ? "HIGH" : "LOW";
-                let displayedDirection = inverseModeActive ? (trueDirection === "HIGH" ? "LOW" : "HIGH") : trueDirection;
-
-                if (proximity <= 5) {
-                    // Minor Adjustment (<= 5)
-                    colorClass = 'almost';
-                    feedbackIcon = '✨';
-                    messageElement.innerText = `${feedbackIcon} Proximity Alert: ${displayedDirection}. Minor adjustment needed (within 5).`;
-                    hintText = `Minor ${displayedDirection}`;
-                } else if (proximity <= 15) {
-                    // Major Adjustment (6 to 15)
-                    colorClass = displayedDirection === "HIGH" ? 'high' : 'low';
-                    feedbackIcon = displayedDirection === "HIGH" ? '🟡' : '🔵';
-                    messageElement.innerText = `${feedbackIcon} Code MAJOR ${displayedDirection}. Significant adjustment required (within 15).`;
-                    hintText = `Major ${displayedDirection}`;
-                } else {
-                    // Extreme Adjustment (> 15)
-                    colorClass = displayedDirection === "HIGH" ? 'high' : 'low';
-                    feedbackIcon = displayedDirection === "HIGH" ? '⬆️' : '⬇️';
-                    messageElement.innerText = `${feedbackIcon} Code TOO ${displayedDirection}. Wide adjustment needed.`;
-                    hintText = `TOO ${displayedDirection}`;
-                }
-                
-                // Add a note to the history for Inverse Mode
-                if (inverseModeActive) {
-                    hintText = `🔄 FAKED ${hintText}`;
-                }
-
-                playFeedbackSound(colorClass);
-            }
-            
-            messageElement.classList.add(colorClass);
-
-            const newEntry = document.createElement("div");
-            newEntry.className = "history-entry";
-            newEntry.innerHTML = `#${attempts}: <strong>${guess}</strong> (${feedbackIcon} ${hintText})`;
-            
-            if (attempts === 1 && historyList.innerHTML.includes("No attempts logged")) {
-                historyList.innerHTML = '';
-            }
-
-            historyList.prepend(newEntry);
-            historyList.scrollTop = 0;
-            
-            guessInput.value = ""; 
-            guessInput.focus();
-
-            if (gameEnded) {
-                gameActive = false;
-                guessInput.setAttribute("disabled", true);
-                submitButton.setAttribute("disabled", true);
-                startRedirectTimer();
-                saveStats(); 
-            }
-        }
-
-        function startRedirectTimer() {
-            let timeLeft = 5;
-            const countdownSpan = document.createElement('span');
-            countdownSpan.id = 'countdown';
-            countdownSpan.innerText = ` (Redirecting in ${timeLeft}s...)`;
-            messageElement.appendChild(countdownSpan);
-
-            redirectTimer = setInterval(() => {
-                timeLeft--;
-                countdownSpan.innerText = ` (Redirecting in ${timeLeft}s...)`;
-
-                if (timeLeft <= 0) {
-                    clearInterval(redirectTimer);
-                    restartGame();
-                }
-            }, 1000);
-        }
-
-        function restartGame() {
-            clearTimersAndEffects();
-            playFeedbackSound('reset');
-            
-            document.getElementById("game").style.display = "none";
-            document.getElementById("maxGuesses").value = "7";
-            document.getElementById("guess").value = "";
-            messageElement.innerText = "";
-            messageElement.className = 'msg'; 
-
-            // Re-enable setup controls
-            document.getElementById("maxGuesses").removeAttribute("disabled");
-            inverseToggle.removeAttribute("disabled"); 
-            document.getElementById("startBtn").style.display = "inline-block";
-            
-            // Show floating icons
-            document.getElementById("settingsIcon").style.display = "inline-block";
-            document.getElementById("supportIcon").style.display = "inline-block";
-            document.getElementById("infoBtn").style.display = "inline-block";
-            
-            document.getElementById("historyBtn").style.display = "none"; 
-
-            closeAllFloatingPanels();
-            
-            guessInput.removeAttribute("disabled");
-            submitButton.removeAttribute("disabled");
-            
-            gameActive = false;
-        }
-
-        function clearTimersAndEffects() {
-            clearInterval(confettiInterval);
-            clearInterval(redirectTimer);
-            
-            const allConfetti = document.querySelectorAll(".confetti");
-            allConfetti.forEach(c => c.remove());
-            
-            document.getElementById("highScoreBanner").classList.remove('active'); // Ensure banner is hidden too
-        }
-        
-        function startConfetti() {
-            confettiInterval = setInterval(() => {
-                for (let i = 0; i < 5; i++) {
-                    let confetti = document.createElement("div");
-                    confetti.className = "confetti";
-                    confetti.style.left = Math.random() * window.innerWidth + "px";
-                    confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
-                    document.body.appendChild(confetti);
-
-                    setTimeout(() => confetti.remove(), 2500); 
-                }
-            }, 200);
-            setTimeout(() => clearInterval(confettiInterval), 3000);
-        }
-        
-        // --- JAVASCRIPT FOR RULES/HISTORY PANEL VISIBILITY ---
-        
-        function togglePanel(panel) {
-            const panels = [instructionsBox, historyPanel];
-            closeAllFloatingPanels(); // Close Modals first
-        
-            panels.forEach(p => {
-                if (p !== panel && p.classList.contains('visible')) {
-                    p.classList.remove('visible');
-                }
-            });
-            
-            panel.classList.toggle('visible');
-        }
-        
-        // --- EVENT LISTENERS ---
-        
-        infoButton.addEventListener('click', () => togglePanel(instructionsBox));
-        historyButton.addEventListener('click', () => togglePanel(historyPanel));
-
-        guessInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                if (gameActive) {
-                    checkGuess();
-                } else if (document.getElementById("startBtn").style.display !== "none") {
-                    startGame();
-                }
-            }
-        });
+        };
     </script>
 </body>
 </html>

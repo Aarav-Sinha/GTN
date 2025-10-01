@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Precision Stop Protocol</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        /* --- Root Variables for Quantum Grid Theme (Dark Default) --- */
+        :root {
+            --color-primary: #004d40; 	 	/* Deep Emerald Green */
+            --color-secondary: #00e5ff; 	/* Vibrant Cyan (Highlight) */
+            --color-accent: #00ff80; 	 	/* Neon Green (Target) */
+            --color-error: #ff3d00; 	 	/* High-Contrast Red */
+            --color-text-dark: #333;
+            --color-text-light: #e0f7fa; 	/* Pale Cyan Text */
+            --box-background-dark: #1f2532; /* Darker, solid background for main box */
+            --modal-bg: #0a0a0a; 	 	 	
+            --chat-bg: #151515; 	 	 	
+            --body-bg: linear-gradient(135deg, #44005e, #000000, #44005e); /* Deep purple/blue gradient */
+            --action-bg: #4472c4; 	 	 	
+            --segment-border: rgba(0, 229, 255, 0.3); 
+            --dark-contrast: #000000; /* Black for high contrast text/bg */
+
+            /* Tier Colors */
+            --tier-great: #00ff80; 	 	 	
+            --tier-good: #69f0ae; 	 	 	
+            --tier-ok: #5b9bd5; 	 	 	
+            --tier-bad: var(--color-error); 
+        }
+
+        /* --- Light Mode Overrides (for contrast) --- */
+        body.light-mode {
+            background: linear-gradient(135deg, #f0f0f0, #ffffff); 
+            color: var(--color-text-dark); 
+
+            --color-primary: #4db6ac; 	 	
+            --color-secondary: #0097a7; 	/* Darker cyan/teal for light mode highlight */
+            --color-accent: #388e3c; 	 	
+            --color-error: #d32f2f;
+            --color-text-light: #333;
+            --box-background-dark: #e0e0e0;
+            --modal-bg: #f8f8f8;
+            --chat-bg: #ffffff;
+            --action-bg: #7cb5ec;
+            --segment-border: rgba(0, 0, 0, 0.2);
+            --dark-contrast: #000000; /* Ensuring black for light mode text */
+        }
+        
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Montserrat', sans-serif;
+            background: var(--body-bg);
+            color: var(--color-text-light);
+            overflow: hidden; 
+            transition: color 0.3s, background 0.3s;
+        }
+        
+        /* --- MAIN GAME CONTAINER (Center Box) --- */
+        #game-box {
+            background: var(--box-background-dark); 
+            border-radius: 15px; 
+            border: 2px solid var(--color-secondary); 
+            padding: 50px 40px; 
+            width: 90%;
+            max-width: 450px; 
+            min-height: 500px; 
+            box-shadow: 0 0 80px rgba(0, 229, 255, 0.2); 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            z-index: 1; 
+            gap: 15px; 
+        }
+
+        h2 { 
+            margin: 0; 
+            font-size: 20px; 
+            font-weight: 700; 
+            color: var(--color-text-light); 
+            text-shadow: 0 0 10px var(--color-secondary); 
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* Subtitle (Tagline) */
+        #aesthetic-subtitle {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--color-accent); 
+            text-shadow: 0 0 5px var(--color-accent);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            transition: color 0.3s, text-shadow 0.3s; 
+        }
+        /* Light Mode for Tagline */
+        body.light-mode #aesthetic-subtitle {
+            color: var(--color-text-dark); 
+            text-shadow: 0 0 2px rgba(0, 0, 0, 0.2); 
+        }
+        
+        /* --- TARGET TIME BLOCK (Top Segment) --- */
+        .time-display-box {
+            background: #10151f; 
+            width: 100%;
+            padding: 15px 0;
+            border-radius: 8px;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--segment-border); 
+            margin-bottom: 5px; 
+        }
+        /* Light Mode for Target Time Box */
+        body.light-mode .time-display-box {
+            background: #ffffff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .time-label {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--color-accent); 
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        /* --- TIMER DIGITS STYLES --- */
+        .digit-display {
+            font-family: 'Share Tech Mono', monospace; 
+            font-size: 50px;
+            font-weight: 700;
+            line-height: 1;
+        }
+        
+        #target-time-display {
+            color: #ffc000; 
+            text-shadow: 0 0 10px rgba(255, 192, 0, 0.5);
+        }
+        /* Light Mode for Timer Digits */
+        body.light-mode #target-time-display {
+            color: #d89f00; /* Darker gold for contrast */
+            text-shadow: none;
+        }
+        body.light-mode #current-timer-display {
+            color: var(--color-text-dark); /* Dark text for current time */
+        }
+
+        #current-timer-display {
+            color: var(--color-text-light); 
+            font-size: 85px; 
+            margin-bottom: 25px; 
+        }
+
+        /* --- ACTION AREA (The Big Button - Bottom Segment) --- */
+        #action-area {
+            background: #10151f; 
+            border: 2px solid var(--color-secondary); 
+            color: var(--color-text-light); 
+            width: 100%;
+            padding: 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.2s, box-shadow 0.2s, border-color 0.2s, animation 0.2s;
+            text-transform: uppercase;
+            font-weight: 700;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.7); 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        #action-area:hover { 
+            background: #1a2233; 
+            box-shadow: 0 0 30px rgba(0, 229, 255, 0.4);
+        }
+        
+        /* Light Mode Overrides for Action Button */
+        body.light-mode #action-area {
+            background: var(--color-secondary); /* Use the vibrant cyan/blue highlight */
+            border-color: var(--color-primary); /* Darker border for definition */
+            color: var(--dark-contrast); /* Black text on bright background (default action text color) */
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3); /* Stronger shadow */
+        }
+        
+        body.light-mode #action-area:hover {
+            background: #00bcd4; /* Slightly darker hover color */
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.4);
+        }
+
+
+        #action-text {
+            font-size: 24px;
+            margin-bottom: 10px;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5); 
+        }
+        /* Light Mode for Action Text */
+        body.light-mode #action-text {
+            color: var(--dark-contrast); /* Ensure action text is dark */
+            text-shadow: none;
+        }
+
+
+        /* Result message box style */
+        #result-message {
+            font-size: 14px;
+            font-weight: 500;
+            text-align: center;
+            color: rgba(0, 255, 255, 0.8); 
+            line-height: 1.4;
+        }
+        /* Light Mode for Result Message */
+        body.light-mode #result-message {
+            color: var(--dark-contrast); /* Ensure result message text is dark */
+        }
+        
+        /* Style for the colored part of the result message (The Tier Text) */
+        #result-message .tier-text {
+            font-weight: 900;
+            padding: 3px 8px;
+            border-radius: 4px;
+            text-shadow: none; 
+            background: transparent;
+            color: white; 
+            display: inline-block;
+        }
+
+        /* --- State specific styles (Result Tiers) --- */
+        
+        /* Animation for Running State (Pulsing Glow) */
+        @keyframes neon-pulse {
+            0% { box-shadow: 0 0 10px rgba(0, 255, 128, 0.5), 0 0 40px rgba(0, 255, 128, 0.2); }
+            50% { box-shadow: 0 0 20px rgba(0, 255, 128, 0.8), 0 0 60px rgba(0, 255, 128, 0.4); }
+            100% { box-shadow: 0 0 10px rgba(0, 255, 128, 0.5), 0 0 40px rgba(0, 255, 128, 0.2); }
+        }
+
+        /* Running State Border and Animation */
+        .state-running {
+            border-color: var(--color-accent) !important; 
+            animation: neon-pulse 1.5s ease-in-out infinite alternate; 
+        }
+
+        /* ELITE - Green Accent */
+        .state-great .tier-text { background: var(--tier-great) !important; color: var(--dark-contrast) !important; } 
+        .state-great { border-color: var(--tier-great) !important; } 
+
+        /* SUCCESS - Light Green Accent */
+        .state-good .tier-text { background: var(--tier-good) !important; color: var(--dark-contrast) !important; }
+        .state-good { border-color: var(--tier-good) !important; }
+
+        /* ACCEPTABLE - Blue Accent */
+        .state-ok .tier-text { background: var(--tier-ok) !important; color: white !important; } 
+        .state-ok { border-color: var(--tier-ok) !important; }
+
+        /* FAILURE - Red Accent */
+        .state-bad .tier-text { background: var(--tier-bad) !important; color: white !important; } 
+        .state-bad { border-color: var(--tier-bad) !important; }
+
+        /* Developer Credit */
+        #developer-credit {
+            margin-top: auto; 
+            font-size: 11px; 
+            color: rgba(0, 255, 128, 0.7); 
+            text-shadow: 0 0 5px rgba(0, 255, 128, 0.4); 
+            letter-spacing: 0.5px;
+            padding-top: 15px; 
+            transition: color 0.3s, text-shadow 0.3s; 
+        }
+        /* Light Mode for Developer Credit */
+        body.light-mode #developer-credit {
+            color: var(--color-text-dark); 
+            text-shadow: none; 
+        }
+
+
+        /* --- FIXED CONTROL BUTTONS (Rules, Settings, Chat, Index) and Modals --- */
+        .fixed-control-btn { 
+            background: var(--color-primary); 
+            border: 1px solid var(--color-accent); 
+            padding: 8px 15px; 
+            border-radius: 5px; 
+            color: var(--color-accent); 
+            font-size: 13px; 
+            font-weight: 600; 
+            cursor: pointer; 
+            transition: 0.2s ease; 
+            box-shadow: 0 0 5px rgba(0, 255, 128, 0.5); 
+            text-transform: uppercase;
+            position: fixed; 
+            z-index: 105;
+        }
+        .fixed-control-btn:hover { background: #00796b; box-shadow: 0 0 10px var(--color-accent); }
+
+        #rulesBtn { top: 20px; right: 20px; }
+        /* NEW BUTTON POSITIONING */
+        #indexBtn { top: 20px; right: 180px; } 
+
+        #settingsBtn { bottom: 20px; right: 20px; padding: 10px 18px; font-size: 16px; text-transform: none; }
+        #chatIcon { position: fixed; bottom: 20px; right: 110px; width: 50px; height: 50px; border-radius: 50%; background: var(--color-accent); color: black; line-height: 50px; text-align: center; cursor: pointer; box-shadow: 0 0 20px var(--color-accent); z-index: 110; font-size: 24px; font-weight: 700; }
+        
+        .fixed-panel-common { 
+            position: fixed; width: 300px; max-height: 85vh; overflow-y: hidden; background: var(--modal-bg); border-radius: 10px; padding: 0; z-index: 210; opacity: 0; visibility: hidden; transition: 0.3s ease; transform: scale(0.9); border: 2px solid var(--color-secondary); box-shadow: 0 10px 30px rgba(0,0,0,0.9); display: flex; flex-direction: column;
+        }
+        .fixed-panel-common.visible { opacity: 1; visibility: visible; transform: scale(1); }
+
+        .modal-header, .chat-header {
+            padding: 10px 20px; background: var(--color-primary); color: var(--color-accent); font-weight: 700; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--color-accent); flex-shrink: 0; 
+        }
+        
+        .modal-body {
+            padding: 20px; color: var(--color-text-light); overflow-y: auto; line-height: 1.6; font-size: 14px;
+        }
+        
+        .modal-close-btn {
+            background: transparent; border: none; color: var(--color-accent); font-size: 20px; cursor: pointer; padding: 5px; line-height: 1; margin-right: -10px; transition: color 0.1s;
+        }
+        .modal-close-btn:hover { color: var(--color-secondary); }
+        
+        #instructions { top: 60px; right: 20px; transform-origin: top right; }
+        #settingsModal { bottom: 70px; right: 20px; transform-origin: bottom right; }
+        #chatPanel { bottom: 70px; right: 20px; transform-origin: bottom right; }
+        
+        #settingsModal .modal-body { max-height: calc(85vh - 44px - 40px); }
+        .setting-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(0, 229, 255, 0.1); }
+        .setting-row:last-of-type { border-bottom: none; }
+        .setting-row span { font-weight: 500; color: var(--color-text-light); }
+        
+        #chat-messages { flex-grow: 1; padding: 10px; overflow-y: auto; background: var(--chat-bg); color: var(--color-text-light); max-height: 300px; }
+        .chat-message { margin-bottom: 12px; padding: 8px 12px; border-radius: 8px; font-size: 13px; line-height: 1.4; max-width: 80%; }
+        .chat-system { background: rgba(0, 229, 255, 0.1); color: var(--color-secondary); margin-right: auto; border: 1px solid var(--color-secondary); text-align: left; }
+        .chat-user { background: var(--color-primary); color: var(--color-text-light); margin-left: auto; text-align: right; }
+        #chat-menu-area { display: flex; flex-direction: column; padding: 10px 20px; gap: 8px; border-top: 1px solid rgba(0, 229, 255, 0.2); background: var(--chat-bg); flex-shrink: 0; }
+        .chat-option-btn { background: var(--color-primary); color: var(--color-text-light); border: 1px solid var(--color-accent); padding: 10px; border-radius: 5px; cursor: pointer; text-align: left; font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 500; transition: background 0.1s, box-shadow 0.2s; }
+        .chat-option-btn:hover { background: #00796b; box-shadow: 0 0 8px rgba(0, 255, 128, 0.5); }
+
+
+        /* Mobile adjustments */
+        @media (max-width: 650px) {
+             #rulesBtn { top: 10px; right: 10px; }
+             /* NEW BUTTON POSITIONING FOR MOBILE */
+             #indexBtn { top: 10px; right: 130px; } 
+
+             #settingsBtn { bottom: 10px; right: 10px; }
+             #chatIcon { right: 80px; bottom: 10px; } 
+             #chatPanel { right: 5%; left: 5%; width: 90%; height: 350px; bottom: 65px; }
+             #instructions { top: 60px; right: 5%; left: 5%; width: 90%;}
+             #settingsModal { bottom: 60px; right: 5%; left: 5%; width: 90%; }
+             #chat-messages { max-height: 250px; }
+        }
+    </style>
+</head>
+<body class="dark-mode">
+    
+    <button id="indexBtn" class="fixed-control-btn" onclick="window.location.href='#'">🏠 INDEX</button>
+
+    <button id="rulesBtn" class="fixed-control-btn" onclick="togglePanel(instructions)">RULES | PROTOCOL</button>
+
+    <div id="chatIcon" onclick="toggleChatPanel()">💬</div>
+
+    <button id="settingsBtn" class="fixed-control-btn" onclick="toggleSettingsModal()">⚙️</button>
+
+    <div id="chatPanel" class="fixed-panel-common">
+        <div class="chat-header">
+            SYSTEM SUPPORT MENU
+            <button class="modal-close-btn" onclick="toggleChatPanel()">✖</button>
+        </div>
+        <div id="chat-messages"> 
+            </div>
+        <div id="chat-menu-area">
+            </div>
+    </div>
+
+    <div id="instructions" class="fixed-panel-common">
+        <div class="modal-header">
+            PROTOCOL GUIDELINES
+            <button class="modal-close-btn" onclick="togglePanel(instructions)">✖</button>
+        </div>
+        <div class="modal-body">
+            <p>The objective is to stop the running timer as close as possible to the **Target Time**.</p>
+            <ol>
+                <li>The system will display a random **Target Time** (3.000s to 8.000s).</li>
+                <li>Click the central **Action Area** to **START** the timer.</li>
+                <li>When you believe the running time is equal to the target time, click the **Action Area** again to **STOP** the timer.</li>
+            </ol>
+            <h4 style="margin-bottom: 5px; color: var(--color-accent);">SCORING TIERS (Accuracy is key):</h4>
+            <ul>
+                <li><span style="color: var(--tier-great);">**ELITE:**</span> $\le 50$ ms difference.</li>
+                <li><span style="color: var(--tier-good);">**SUCCESS:**</span> $\le 200$ ms difference.</li>
+                <li><span style="color: var(--tier-ok);">**ACCEPTABLE:**</span> $\le 500$ ms difference.</li>
+                <li><span style="color: var(--tier-bad);">**FAILURE:**</span> $> 500$ ms difference.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="settingsModal" class="fixed-panel-common">
+        <div class="modal-header">
+            SYSTEM SETTINGS
+            <button class="modal-close-btn" onclick="toggleSettingsModal()">✖</button>
+        </div>
+        <div class="modal-body">
+            <div class="setting-row">
+                <span>Theme Mode</span>
+                <button id="themeToggleBtn" class="fixed-control-btn" onclick="toggleTheme()" style="position: static; margin: 0; box-shadow: none; border-bottom: none; padding: 5px 10px; font-size: 12px; background: var(--color-secondary); color: black;">🌙 Toggle</button>
+            </div>
+            <div class="setting-row">
+                <span>Sound Effects</span>
+                <button id="soundToggleBtn" class="fixed-control-btn" onclick="toggleSound()" style="position: static; margin: 0; box-shadow: none; border-bottom: none; padding: 5px 10px; font-size: 12px; background: var(--color-secondary); color: black;">🔊 ON</button>
+            </div>
+            <hr style="border-color: rgba(0, 229, 255, 0.2); margin: 15px 0;">
+            <p style="font-size: 12px; color: var(--color-secondary); text-align: center;">*For technical assistance, please use the Support Menu (💬).</p>
+        </div>
+    </div>
+    
+    <div id="game-box">
+        
+        <h2>🎯 Precision Stop Protocol</h2>
+        
+        <div id="aesthetic-subtitle">HIT THE MARK. MASTER THE MILLISECOND.</div>
+
+        <div class="time-display-box">
+            <div class="time-label">TARGET TIME</div>
+            <div id="target-time-display" class="digit-display">X.XXX</div>
+        </div>
+
+        <div id="current-timer-display" class="digit-display">0.000</div>
+
+        <div id="action-area" class="state-ready" onclick="precisionStop.handleAction()">
+            <span id="action-text">CLICK TO START</span>
+            <div id="result-message">Set the clock! Aim for the target time above.</div>
+        </div>
+
+        <div id="developer-credit">Developed by Aarav Sinha</div>
+        
+    </div>
+
+    <div id="footer" style="position: fixed; bottom: 10px; left: 10px; font-size: 12px; color: rgba(0, 229, 255, 0.5); text-shadow: 0 0 5px rgba(0, 229, 255, 0.5); z-index: 5;">
+        Protocol System 3.2
+    </div>
+
+    <script>
+        // --- GAME STATE CONSTANTS & DOM ELEMENTS ---
+        const STATE_READY = 'READY';
+        const STATE_RUNNING = 'RUNNING';
+        const STATE_RESULT = 'RESULT';
+        const targetTimeDisplay = document.getElementById('target-time-display');
+        const currentTimerDisplay = document.getElementById('current-timer-display');
+        const actionArea = document.getElementById('action-area');
+        const actionText = document.getElementById('action-text');
+        const resultMessage = document.getElementById('result-message');
+        const body = document.body;
+        const instructionsPanel = document.getElementById('instructions');
+        const settingsModal = document.getElementById('settingsModal');
+        const chatPanel = document.getElementById('chatPanel');
+        const chatMessages = document.getElementById('chat-messages');
+        const chatMenuArea = document.getElementById('chat-menu-area');
+        const themeToggleBtn = document.getElementById('themeToggleBtn');
+        const soundToggleBtn = document.getElementById('soundToggleBtn');
+        let state = STATE_READY;
+        let targetTimeMs = 0;
+        let rafHandle; 
+        let startTime = 0;
+        let elapsedMs = 0;
+        let isSoundEnabled = true; 
+        let audioCtx; 
+        
+        // Array of all panels for closing functionality
+        const allPanels = [instructionsPanel, settingsModal, chatPanel];
+
+        // --- CHAT RESPONSE DATABASE (Multiple Choice Answers) ---
+        const responseDatabase = {
+            INITIAL: {
+                message: "Welcome to the Support Menu. I can provide instant information on the following topics:",
+                options: [
+                    { text: "1. How is my score calculated?", value: "SCORING" },
+                    { text: "2. How does the timer work?", value: "MECHANICS" },
+                    { text: "3. Where are the settings?", value: "SETTINGS_LOC" },
+                    { text: "4. Who developed this system?", value: "ABOUT" }
+                ]
+            },
+            SCORING: {
+                message: "Accuracy is measured by the absolute difference in milliseconds (ms) between your stop time and the Target Time. Elite status is achieved for a difference of $\\le 50$ ms.",
+                next: 'MAIN_MENU'
+            },
+            MECHANICS: {
+                message: "The timer runs using the browser's high-precision 'requestAnimationFrame' loop, ensuring the highest possible accuracy and low latency for the stop function.",
+                next: 'MAIN_MENU'
+            },
+            SETTINGS_LOC: {
+                message: "System settings (Theme, Sound) are accessed via the **SETTINGS** button (⚙️) located at the bottom-right of the screen.",
+                next: 'MAIN_MENU'
+            },
+            ABOUT: {
+                message: "This 'Quantum Grid Protocol' system was developed by Aarav Sinha as a high-precision human reaction challenge.",
+                next: 'MAIN_MENU'
+            },
+            MAIN_MENU: {
+                message: "Ready for your next question. Please choose from the list:",
+                options: [{ text: "Back to Main Menu", value: "INITIAL" }]
+            }
+        };
+
+        // --- AUDIO FUNCTIONS ---
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        const TONE_FREQS = { 'START': 523.2, 'GREAT': 1318.5, 'GOOD': 987.8, 'OK': 659.3, 'BAD': 110.0, };
+
+        function ensureAudioContext() {
+            if (audioCtx) return;
+            try {
+                audioCtx = new AudioContext();
+            } catch (e) {
+                console.warn("AudioContext not supported or failed to initialize:", e);
+                isSoundEnabled = false; 
+                soundToggleBtn.innerText = '🔇 OFF';
+                soundToggleBtn.style.background = 'var(--color-error)';
+            }
+        }
+        function generateTone(frequency, duration_ms = 100, waveType = 'sine', decay = 0.05) {
+            if (!isSoundEnabled || !audioCtx) return;
+            
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            oscillator.type = waveType;
+            oscillator.frequency.setValueAtTime(frequency, audioCtx.currentTime);
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            const now = audioCtx.currentTime;
+            const duration_s = duration_ms / 1000;
+            gainNode.gain.setValueAtTime(0.5, now);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, now + duration_s + decay);
+            oscillator.start();
+            oscillator.stop(now + duration_s + decay);
+        }
+
+        // --- TIME FORMATTING & DISPLAY ---
+        function formatTime(ms) {
+            const totalSeconds = ms / 1000;
+            const seconds = Math.floor(totalSeconds).toString();
+            const milliseconds = Math.floor((totalSeconds - seconds) * 1000).toString().padStart(3, '0');
+            return `${seconds}.${milliseconds}`;
+        }
+
+        function updateDisplay() {
+            elapsedMs = Date.now() - startTime;
+            currentTimerDisplay.innerText = formatTime(elapsedMs);
+            if (state === STATE_RUNNING) {
+                rafHandle = requestAnimationFrame(updateDisplay);
+            }
+        }
+
+        // --- CORE GAME LOGIC ---
+        const precisionStop = {
+            generateTarget() { targetTimeMs = Math.floor(Math.random() * 5000) + 3000; targetTimeDisplay.innerText = formatTime(targetTimeMs); },
+            handleAction() {
+                ensureAudioContext();
+                if (state === STATE_READY) { this.startGame(); } 
+                else if (state === STATE_RUNNING) { this.stopGame(); } 
+                else if (state === STATE_RESULT) { this.resetGame(); }
+            },
+            startGame() {
+                // Close panels before starting game
+                allPanels.forEach(p => p.classList.remove('visible'));
+                this.generateTarget(); startTime = Date.now(); state = STATE_RUNNING;
+                
+                actionArea.classList.remove('state-ready', 'state-great', 'state-good', 'state-ok', 'state-bad');
+                actionArea.classList.add('state-running'); actionText.innerText = "CLICK TO STOP"; resultMessage.innerText = "RUNNING... FOCUS!";
+                rafHandle = requestAnimationFrame(updateDisplay);
+                generateTone(TONE_FREQS['START'], 80, 'triangle');
+            },
+            stopGame() {
+                cancelAnimationFrame(rafHandle); state = STATE_RESULT;
+                const stoppedTime = elapsedMs; const difference = Math.abs(stoppedTime - targetTimeMs);
+                this.showResult(stoppedTime, difference);
+            },
+            showResult(stoppedTime, difference) {
+                const absDiff = Math.round(difference); actionArea.classList.remove('state-running');
+                let tier, tierName, soundFreq, soundType, tierColor;
+                
+                if (absDiff <= 50) { tier = 'great'; tierName = 'ELITE ACCURACY'; soundFreq = TONE_FREQS['GREAT']; soundType = 'sine'; tierColor = 'var(--tier-great)'; } 
+                else if (absDiff <= 200) { tier = 'good'; tierName = 'SUCCESS'; soundFreq = TONE_FREQS['GOOD']; soundType = 'triangle'; tierColor = 'var(--tier-good)'; } 
+                else if (absDiff <= 500) { tier = 'ok'; tierName = 'ACCEPTABLE'; soundFreq = TONE_FREQS['OK']; soundType = 'square'; tierColor = 'var(--tier-ok)'; } 
+                else { tier = 'bad'; tierName = 'FAILURE'; soundFreq = TONE_FREQS['BAD']; soundType = 'square'; tierColor = 'var(--tier-bad)'; }
+
+                resultMessage.innerHTML = `<span class="tier-text">${tierName}. ${absDiff} MS DIFFERENCE.</span> TARGET WAS ${formatTime(targetTimeMs)}.`;
+                actionArea.classList.add(`state-${tier}`); actionText.innerText = `RETRY? Difference: ${absDiff} ms`;
+                generateTone(soundFreq, 150, soundType, 0.2);
+            },
+            resetGame() {
+                state = STATE_READY;
+                actionArea.classList.remove('state-great', 'state-good', 'state-ok', 'state-bad'); actionArea.classList.add('state-ready');
+                actionText.innerText = "CLICK TO START"; currentTimerDisplay.innerText = "0.000"; targetTimeDisplay.innerText = "X.XXX";
+                resultMessage.innerText = "Set the clock! Aim for the target time above.";
+            }
+        };
+
+        // --- UI & MODAL FUNCTIONS ---
+
+        function togglePanel(panelToToggle) {
+            allPanels.forEach(p => {
+                if (p !== panelToToggle) {
+                    p.classList.remove('visible');
+                }
+            });
+            panelToToggle.classList.toggle('visible');
+        }
+
+        function toggleSettingsModal() {
+            togglePanel(settingsModal);
+        }
+
+        function toggleChatPanel() {
+            const isVisible = chatPanel.classList.contains('visible');
+            togglePanel(chatPanel);
+
+            if (!isVisible) {
+                chatMessages.innerHTML = ''; 
+                displayOptions('INITIAL');
+            }
+        }
+        
+        function toggleTheme() {
+            body.classList.toggle('light-mode');
+            const isLight = body.classList.contains('light-mode');
+            themeToggleBtn.innerText = isLight ? '🌙 Dark' : '☀️ Light';
+            themeToggleBtn.style.background = isLight ? 'var(--color-primary)' : 'var(--color-secondary)';
+            themeToggleBtn.style.color = isLight ? 'white' : 'black';
+        }
+        
+        function toggleSound() {
+            ensureAudioContext(); 
+            isSoundEnabled = !isSoundEnabled;
+            soundToggleBtn.innerText = isSoundEnabled ? '🔊 ON' : '🔇 OFF';
+            soundToggleBtn.style.background = isSoundEnabled ? 'var(--color-secondary)' : 'var(--color-error)';
+        }
+
+        // --- CHAT LOGIC ---
+
+        function addMessageToChat(text, type) {
+            const msgElement = document.createElement('div');
+            msgElement.className = `chat-message chat-${type}`;
+            msgElement.innerHTML = text;
+            chatMessages.appendChild(msgElement);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function displayOptions(key) {
+            const data = responseDatabase[key];
+            chatMenuArea.innerHTML = ''; 
+            
+            if (data.message) {
+                 addMessageToChat(data.message, 'system');
+            }
+            
+            if (data.options) {
+                data.options.forEach(option => {
+                    const button = document.createElement('button');
+                    button.className = 'chat-option-btn';
+                    button.textContent = option.text;
+                    button.onclick = () => handleOptionClick(option.text, option.value);
+                    chatMenuArea.appendChild(button);
+                });
+            }
+        }
+
+        function handleOptionClick(userText, nextKey) {
+            addMessageToChat(userText, 'user');
+            
+            if (nextKey === 'INITIAL') {
+                setTimeout(() => {
+                    chatMessages.innerHTML = ''; 
+                    displayOptions('INITIAL');
+                }, 300);
+                return;
+            }
+
+            const responseData = responseDatabase[nextKey];
+            
+            setTimeout(() => {
+                displayOptions(nextKey);
+                
+                if (responseData.next) {
+                    if (responseData.next !== nextKey) {
+                        displayOptions(responseData.next);
+                    }
+                }
+            }, 300);
+        }
+
+        // --- INITIALIZATION ---
+        
+        window.precisionStop = precisionStop;
+        window.toggleTheme = toggleTheme;
+        window.toggleSound = toggleSound;
+        window.togglePanel = togglePanel;
+        window.toggleSettingsModal = toggleSettingsModal;
+        window.toggleChatPanel = toggleChatPanel;
+        window.handleOptionClick = handleOptionClick;
+
+        // Set initial button states
+        themeToggleBtn.innerText = body.classList.contains('light-mode') ? '🌙 Dark' : '☀️ Light';
+        themeToggleBtn.style.background = body.classList.contains('light-mode') ? 'var(--color-primary)' : 'var(--color-secondary)';
+        soundToggleBtn.innerText = isSoundEnabled ? '🔊 ON' : '🔇 OFF';
+        soundToggleBtn.style.background = isSoundEnabled ? 'var(--color-secondary)' : 'var(--color-error)';
+    </script>
+</body>
+</html>
