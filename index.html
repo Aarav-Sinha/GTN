@@ -3,20 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aarav Sinha Protocols - Index</title>
+    <title>Arcade OS: Protocol Selector</title>
+    <!-- Importing Montserrat for clean text and Share Tech Mono for the tech aesthetic -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
-        /* --- Root Variables (Copy from Game Page) --- */
+        /* --- Root Variables for Cyber Theme (Red/Cyan) --- */
         :root {
-            --color-primary: #004d40;       /* Deep Emerald Green */
-            --color-secondary: #00e5ff;     /* Vibrant Cyan (Highlight) */
-            --color-accent: #00ff80;        /* Neon Green (Target) */
-            --color-error: #ff3d00;         /* High-Contrast Red */
-            --color-text-dark: #333;
-            --color-text-light: #e0f7fa;    /* Pale Cyan Text */
-            /* UPDATED BACKGROUND: Deep crimson/black gradient for unique index look */
-            --body-bg: linear-gradient(135deg, #721644, #0a0a0a, #721644); 
-            --card-bg: #1f2532; 
+            --color-bg-dark: #000000;
+            --color-primary: #FF3333;       /* Vibrant Red */
+            --color-secondary: #00bcd4;     /* Vibrant Cyan */
+            --color-text: #e0e6f0;
+            --card-bg: rgba(15, 20, 30, 0.9); /* Darker semi-transparent card background */
+            --border-glow: rgba(255, 51, 51, 0.7); /* Red glow */
+            --header-glow: rgba(0, 188, 212, 0.9); /* Cyan glow */
+        }
+
+        /* Subtle glow pulse animation for the central grid (RETAINED for content dynamism) */
+        @keyframes subtlePulse {
+            0% { box-shadow: 0 0 10px rgba(0, 188, 212, 0.1); }
+            50% { box-shadow: 0 0 20px rgba(255, 51, 51, 0.2), 0 0 5px rgba(0, 188, 212, 0.3); }
+            100% { box-shadow: 0 0 10px rgba(0, 188, 212, 0.1); }
         }
 
         body {
@@ -24,258 +30,217 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            justify-content: center;
             align-items: center;
             font-family: 'Montserrat', sans-serif;
-            background: var(--body-bg); /* Now uses the new crimson gradient */
-            color: var(--color-text-light);
-            padding: 40px 20px;
-            transition: color 0.3s, background 0.3s;
+            color: var(--color-text);
+            overflow-x: hidden;
+            
+            /* AESTHETIC GRADIENT BACKGROUND IMPLEMENTED */
+            /* Deep Black/Red/Cyan Diagonal Gradient */
+            background: linear-gradient(135deg, 
+                #000000 0%,         /* Deep Black start */
+                #220000 30%,         /* Dark Red transition */
+                #11001A 70%,         /* Very Dark Purple/Blue transition */
+                #000000 100%         /* Deep Black end */
+            );
+            background-attachment: fixed; /* Ensures the gradient stays put */
         }
 
-        /* --- Light Mode Overrides for Index --- */
-        body.light-mode {
-            background: linear-gradient(135deg, #f0f0f0, #ffffff); 
-            color: var(--color-text-dark); 
-
-            --color-primary: #4db6ac;       
-            --color-secondary: #0097a7;     
-            --color-accent: #388e3c;        
-            --color-text-light: #333;
-            --card-bg: #e0e0e0;
-        }
-
-        /* --- HEADER --- */
-        #header {
+        /* --- Main Title and Header --- */
+        .system-header {
             text-align: center;
-            margin-bottom: 50px;
-            width: 100%;
-            max-width: 800px;
+            padding: 40px 20px;
+            margin-bottom: 20px;
         }
 
-        #header h1 {
-            font-size: 36px;
+        .system-header h1 {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: clamp(30px, 6vw, 55px);
             font-weight: 700;
             color: var(--color-secondary);
-            text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
-            margin-bottom: 10px;
+            text-shadow: 0 0 15px var(--header-glow), 0 0 30px var(--header-glow);
+            letter-spacing: 5px;
+            margin: 0;
+            text-transform: uppercase;
+        }
+        
+        .system-header p {
+            font-size: clamp(14px, 2vw, 18px);
+            color: var(--color-primary); /* Red accent */
+            margin-top: 10px;
+            letter-spacing: 2px;
+            font-weight: 500;
             text-transform: uppercase;
         }
 
-        #header p {
-            font-size: 16px;
-            color: rgba(0, 255, 128, 0.8);
-            letter-spacing: 1px;
-        }
-        
-        /* Light Mode Header Adjustment */
-        body.light-mode #header h1 {
-            color: var(--color-secondary);
-            text-shadow: none;
-        }
-        body.light-mode #header p {
-            color: var(--color-text-dark);
-        }
-
-        /* --- GALLERY GRID --- */
-        #gallery-grid {
+        /* --- Game Grid Layout --- */
+        #game-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 30px;
-            width: 100%;
+            padding: 20px 5vw 60px;
+            width: 90%;
             max-width: 1200px;
-            margin-bottom: 50px;
+            /* Subtle Pulse Animation for the container */
+            animation: subtlePulse 5s ease-in-out infinite; 
         }
 
-        .game-card {
+        /* --- Protocol Card Styling (Aesthetic) --- */
+        .protocol-card {
             background: var(--card-bg);
+            border-radius: 12px;
             border: 2px solid var(--color-secondary);
-            border-radius: 10px;
-            padding: 25px;
+            padding: 30px;
             text-align: center;
-            box-shadow: 0 0 20px rgba(0, 229, 255, 0.1);
-            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s;
-            text-decoration: none; 
-            color: inherit;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
+            text-decoration: none;
+            color: var(--color-text);
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 0 15px rgba(0, 188, 212, 0.3);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(8px);
+            will-change: transform, box-shadow;
         }
 
-        .game-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0, 229, 255, 0.4);
-            border-color: var(--color-accent);
-        }
-
-        .game-card h3 {
-            font-size: 22px;
-            color: var(--color-accent);
-            margin-top: 0;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-        }
-
-        .game-card p.tagline {
-            font-size: 14px;
-            color: rgba(255, 255, 255, 0.7);
-            margin-bottom: 15px;
-            min-height: 40px; 
-            font-weight: 300;
-        }
-        
-        /* Light Mode Card Adjustments */
-        body.light-mode .game-card {
+        /* Hover Effect: Lift, scale, and intensify red glow */
+        .protocol-card:hover {
+            transform: translateY(-8px) scale(1.03);
+            box-shadow: 0 5px 30px var(--border-glow), 0 0 40px var(--color-primary);
             border-color: var(--color-primary);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
-        body.light-mode .game-card:hover {
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            border-color: var(--color-secondary);
-        }
-        body.light-mode .game-card h3 {
+
+        /* Card Header */
+        .protocol-card h2 {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 24px;
             color: var(--color-primary);
-        }
-        body.light-mode .game-card p.tagline {
-            color: var(--color-text-dark);
-        }
-
-
-        /* --- STATUS BADGE --- */
-        .status-badge {
-            display: inline-block;
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-size: 12px;
-            font-weight: 700;
-            margin-top: 15px;
+            margin-top: 0;
             text-transform: uppercase;
             letter-spacing: 1px;
-            align-self: flex-start; 
-            margin-left: 0;
+            transition: color 0.3s;
+        }
+        .protocol-card:hover h2 {
+            color: var(--color-secondary); /* Cyan on hover */
         }
 
-        .status-badge.live {
-            background: var(--color-accent);
-            color: var(--color-primary); 
-        }
-
-        .status-badge.classic {
-            background: #bdbdbd; /* Gray */
-            color: var(--color-text-dark);
-        }
-
-        .status-badge.new {
-            background: var(--color-secondary);
-            color: var(--color-text-dark);
+        /* Card Icon/Symbol (Large text replacement for Emojis) */
+        .protocol-card .icon {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 40px;
+            margin-bottom: 15px;
+            display: block;
+            line-height: 1;
+            font-weight: 700;
+            text-shadow: 0 0 10px;
         }
         
-        /* --- Footer/Toggle --- */
-        #footer-controls {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            display: flex;
-            gap: 10px;
-        }
-        
-        .fixed-control-btn { 
-            background: var(--color-primary); 
-            border: 1px solid var(--color-accent); 
-            padding: 10px 18px; 
-            border-radius: 5px; 
-            color: var(--color-accent); 
-            font-size: 16px; 
-            font-weight: 600; 
-            cursor: pointer; 
-            transition: 0.2s ease; 
-            box-shadow: 0 0 5px rgba(0, 255, 128, 0.5); 
-            text-transform: none;
-        }
-        .fixed-control-btn:hover { background: #00796b; box-shadow: 0 0 10px var(--color-accent); }
-        
-        /* Light Mode Button Styling */
-        body.light-mode .fixed-control-btn {
-            background: var(--color-secondary);
-            color: var(--color-text-dark);
-            border-color: var(--color-primary);
-            box-shadow: none;
+        /* Card Description */
+        .protocol-card .description {
+            font-size: 14px;
+            font-weight: 300;
+            opacity: 0.8;
+            margin-top: 15px;
+            border-top: 1px dashed rgba(255, 255, 255, 0.1);
+            padding-top: 15px;
         }
 
-        /* Mobile adjustments */
-        @media (max-width: 600px) {
-            #header h1 { font-size: 28px; }
-            #header p { font-size: 14px; }
-            #footer-controls { right: 10px; bottom: 10px; }
-            .fixed-control-btn { padding: 8px 15px; font-size: 14px; }
+        /* Aesthetics: Colored Accent Bar on Top */
+        .protocol-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--color-primary); /* Red Bar */
+            transition: background 0.3s;
+        }
+        .protocol-card:hover::before {
+            background: var(--color-secondary); /* Cyan Bar on Hover */
+        }
+        
+        /* Specific Card Coloring (Contrasting colors for each card) */
+        .card-1 h2, .card-1 .icon { color: #FF6347; text-shadow: 0 0 10px rgba(255, 99, 71, 0.8); } /* Tomato Red for Memory */
+        .card-2 h2, .card-2 .icon { color: #FFD700; text-shadow: 0 0 10px rgba(255, 215, 0, 0.8); } /* Gold for Deduction */
+        .card-3 h2, .card-3 .icon { color: #00FF00; text-shadow: 0 0 10px rgba(0, 255, 0, 0.8); } /* Neon Green for Precision */
+        .card-4 h2, .card-4 .icon { color: #FF00FF; text-shadow: 0 0 10px rgba(255, 0, 255, 0.8); } /* Magenta for Reflex */
+
+        /* --- Footer --- */
+        .system-footer {
+            margin-top: auto;
+            padding: 10px 0;
+            width: 100%;
+            text-align: center;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 12px;
+            color: rgba(0, 188, 212, 0.5);
+            background: rgba(0, 0, 0, 0.4);
+            border-top: 1px solid rgba(0, 188, 212, 0.2);
+        }
+        
+        /* Responsive Adjustments for smaller screens */
+        @media (max-width: 768px) {
+            #game-grid {
+                grid-template-columns: 1fr;
+                padding: 20px 5vw;
+            }
+            .protocol-card {
+                padding: 25px;
+            }
         }
     </style>
 </head>
-<body class="dark-mode">
+<body>
 
-    <div id="header">
-        <h1>Aarav Sinha | Protocol System Index</h1>
-        <p>A suite of aesthetic challenges designed to test your precision, memory, and speed.</p>
+    <div class="system-header">
+        <h1>ARCADE OS V2.1</h1>
+        <p>SELECT DECRYPTION PROTOCOL</p>
     </div>
 
-    <div id="gallery-grid">
-
-        <a href="Precision.html" class="game-card"> 
-            <span class="status-badge live">LIVE</span>
-            <div>
-                <h3>🎯 Precision Stop Protocol</h3>
-                <p class="tagline">Master the Millisecond. Execute the stop command with $\le 50$ ms accuracy.</p>
+    <div id="game-grid">
+        
+        <!-- 1. Colour Sequence Protocol (Memory/Pattern Recognition) -->
+        <a href="ColourSeq.html" class="protocol-card card-1">
+            <span class="icon">MEM</span>
+            <h2>MEMORY SEQUENCE PROTOCOL</h2>
+            <div class="description">
+                **Objective:** Replicate the flashing colour sequence pattern. Tests short-term memory and pattern recognition.
             </div>
         </a>
 
-        <a href="GuessNum.html" class="game-card">
-            <span class="status-badge classic">CLASSIC</span>
-            <div>
-                <h3>🔢 Guess Master Protocol</h3>
-                <p class="tagline">Decipher the sequence. A number guessing challenge with advanced feedback modes.</p>
+        <!-- 2. Guess Master Protocol (Deduction/Logic) -->
+        <a href="GuessNum.html" class="protocol-card card-2">
+            <span class="icon">DED</span>
+            <h2>GUESS MASTER PROTOCOL</h2>
+            <div class="description">
+                **Objective:** Deduce the hidden number (1-100) in the minimum number of attempts using directional hints.
             </div>
         </a>
 
-        <a href="ColourSeq.html" class="game-card">
-            <span class="status-badge new">NEW</span>
-            <div>
-                <h3>💡 Colour Sequence Protocol</h3>
-                <p class="tagline">Recall the pattern. Test your short-term visual memory and focus.</p>
+        <!-- 3. Time Warp Protocol (Precision) -->
+        <a href="Precision.html" class="protocol-card card-3">
+            <span class="icon">PRC</span>
+            <h2>TIME WARP PROTOCOL</h2>
+            <div class="description">
+                **Objective:** Stop the internal timer **exactly** at the given target time. Measures extreme timing accuracy.
+            </div>
+        </a>
+
+        <!-- 4. Instantaneous Reflex Protocol (Reaction) -->
+        <a href="Reaction.html" class="protocol-card card-4">
+            <span class="icon">RFL</span>
+            <h2>INSTANTANEOUS REFLEX PROTOCOL</h2>
+            <div class="description">
+                **Objective:** Initiate the stop signal the *instant* the screen changes to green. Measures pure reaction time.
             </div>
         </a>
         
-        <a href="ReactionTest.html" class="game-card">
-            <span class="status-badge live">LIVE</span>
-            <div>
-                <h3>⚡ Reaction Test Protocol</h3>
-                <p class="tagline">Measure the impulse. Click instantly when the system signals the go command.</p>
-            </div>
-        </a>
-
+    </div>
+    
+    <div class="system-footer">
+        PROTOCOL STATUS: ONLINE | DEVELOPED BY AARAV SINHA
     </div>
 
-    <div id="footer-controls">
-        <button id="themeToggleBtn" class="fixed-control-btn" onclick="toggleTheme()">☀️ Toggle Theme</button>
-    </div>
-
-    <script>
-        const body = document.body;
-        const themeToggleBtn = document.getElementById('themeToggleBtn');
-        
-        function toggleTheme() {
-            body.classList.toggle('light-mode');
-            const isLight = body.classList.contains('light-mode');
-            themeToggleBtn.innerText = isLight ? '🌙 Toggle Theme' : '☀️ Toggle Theme';
-        }
-
-        // Initialize button text based on current theme
-        window.onload = function() {
-            // Check for saved theme preference (optional: enhance by using localStorage)
-            if (body.classList.contains('light-mode')) {
-                themeToggleBtn.innerText = '🌙 Toggle Theme';
-            } else {
-                themeToggleBtn.innerText = '☀️ Toggle Theme';
-            }
-        };
-    </script>
 </body>
 </html>

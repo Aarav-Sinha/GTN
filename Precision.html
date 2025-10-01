@@ -1,710 +1,864 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Precision Stop Protocol</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
-    <style>
-        /* --- Root Variables for Quantum Grid Theme (Dark Default) --- */
-        :root {
-            --color-primary: #004d40; 	 	/* Deep Emerald Green */
-            --color-secondary: #00e5ff; 	/* Vibrant Cyan (Highlight) */
-            --color-accent: #00ff80; 	 	/* Neon Green (Target) */
-            --color-error: #ff3d00; 	 	/* High-Contrast Red */
-            --color-text-dark: #333;
-            --color-text-light: #e0f7fa; 	/* Pale Cyan Text */
-            --box-background-dark: #1f2532; /* Darker, solid background for main box */
-            --modal-bg: #0a0a0a; 	 	 	
-            --chat-bg: #151515; 	 	 	
-            --body-bg: linear-gradient(135deg, #44005e, #000000, #44005e); /* Deep purple/blue gradient */
-            --action-bg: #4472c4; 	 	 	
-            --segment-border: rgba(0, 229, 255, 0.3); 
-            --dark-contrast: #000000; /* Black for high contrast text/bg */
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Precision Stop Protocol</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+/* --- Root Variables for Quantum Grid Theme (Dark Default) --- */
+:root {
+    --color-primary: #004d40;       /* Deep Emerald Green */
+    --color-secondary: #00e5ff;     /* Vibrant Cyan (Highlight) */
+    --color-accent: #00ff80;        /* Neon Green (Target) */
+    --color-error: #ff3d00;         /* High-Contrast Red */
+    --color-text-dark: #333;
+    --color-text-light: #e0f7fa;    /* Pale Cyan Text */
+    --box-background-dark: #1f2532; /* Darker, solid background for main box */
+    --modal-bg: #0a0a0a;
+    --chat-bg: #151515;
+    --body-bg: linear-gradient(135deg, #44005e, #000000, #44005e); /* Deep purple/blue gradient */
+    --action-bg: #4472c4;
+    --segment-border: rgba(0, 229, 255, 0.3);
+    --dark-contrast: #000000; /* Black for high contrast text/bg */
+    /* Tier Colors */
+    --tier-great: #00ff80;
+    --tier-good: #69f0ae;
+    --tier-ok: #5b9bd5;
+    --tier-bad: var(--color-error);
+}
+/* --- Light Mode Overrides (for contrast) --- */
+body.light-mode {
+    background: linear-gradient(135deg, #f0f0f0, #ffffff);
+    color: var(--color-text-dark);
+    --color-primary: #4db6ac;
+    --color-secondary: #0097a7;     /* Darker cyan/teal for light mode highlight */
+    --color-accent: #388e3c;
+    --color-error: #d32f2f;
+    --color-text-light: #333;
+    --box-background-dark: #e0e0e0;
+    --modal-bg: #f8f8f8;
+    --chat-bg: #ffffff;
+    --action-bg: #7cb5ec;
+    --segment-border: rgba(0, 0, 0, 0.2);
+    --dark-contrast: #000000; /* Ensuring black for light mode text */
+}
 
-            /* Tier Colors */
-            --tier-great: #00ff80; 	 	 	
-            --tier-good: #69f0ae; 	 	 	
-            --tier-ok: #5b9bd5; 	 	 	
-            --tier-bad: var(--color-error); 
-        }
+body {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Montserrat', sans-serif;
+    background: var(--body-bg);
+    color: var(--color-text-light);
+    overflow: hidden;
+    transition: color 0.3s, background 0.3s;
+}
 
-        /* --- Light Mode Overrides (for contrast) --- */
-        body.light-mode {
-            background: linear-gradient(135deg, #f0f0f0, #ffffff); 
-            color: var(--color-text-dark); 
+/* --- MAIN GAME CONTAINER (Center Box) --- */
+#game-box {
+    background: var(--box-background-dark);
+    border-radius: 15px;
+    /* BORDER WIDTH INCREASED TO 4PX */
+    border: 4px solid var(--color-secondary); 
+    padding: 50px 40px;
+    width: 90%;
+    max-width: 450px;
+    min-height: 500px;
+    box-shadow: 0 0 80px rgba(0, 229, 255, 0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+    gap: 15px;
+}
+h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--color-text-light);
+    text-shadow: 0 0 10px var(--color-secondary);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+/* Subtitle (Tagline) */
+#aesthetic-subtitle {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-accent);
+    text-shadow: 0 0 5px var(--color-accent);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    transition: color 0.3s, text-shadow 0.3s;
+}
+/* Light Mode for Tagline */
+body.light-mode #aesthetic-subtitle {
+    color: var(--color-text-dark);
+    text-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+}
 
-            --color-primary: #4db6ac; 	 	
-            --color-secondary: #0097a7; 	/* Darker cyan/teal for light mode highlight */
-            --color-accent: #388e3c; 	 	
-            --color-error: #d32f2f;
-            --color-text-light: #333;
-            --box-background-dark: #e0e0e0;
-            --modal-bg: #f8f8f8;
-            --chat-bg: #ffffff;
-            --action-bg: #7cb5ec;
-            --segment-border: rgba(0, 0, 0, 0.2);
-            --dark-contrast: #000000; /* Ensuring black for light mode text */
-        }
-        
-        body {
-            margin: 0;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-family: 'Montserrat', sans-serif;
-            background: var(--body-bg);
-            color: var(--color-text-light);
-            overflow: hidden; 
-            transition: color 0.3s, background 0.3s;
-        }
-        
-        /* --- MAIN GAME CONTAINER (Center Box) --- */
-        #game-box {
-            background: var(--box-background-dark); 
-            border-radius: 15px; 
-            border: 2px solid var(--color-secondary); 
-            padding: 50px 40px; 
-            width: 90%;
-            max-width: 450px; 
-            min-height: 500px; 
-            box-shadow: 0 0 80px rgba(0, 229, 255, 0.2); 
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            position: relative;
-            z-index: 1; 
-            gap: 15px; 
-        }
+/* --- TARGET TIME BLOCK (Top Segment) --- */
+.time-display-box {
+    background: #10151f;
+    width: 100%;
+    padding: 15px 0;
+    border-radius: 8px;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--segment-border);
+    margin-bottom: 5px;
+}
+/* Light Mode for Target Time Box */
+body.light-mode .time-display-box {
+    background: #ffffff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+.time-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--color-accent);
+    margin-bottom: 5px;
+    text-transform: uppercase;
+}
+/* --- TIMER DIGITS STYLES --- */
+.digit-display {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 50px;
+    font-weight: 700;
+    line-height: 1;
+}
 
-        h2 { 
-            margin: 0; 
-            font-size: 20px; 
-            font-weight: 700; 
-            color: var(--color-text-light); 
-            text-shadow: 0 0 10px var(--color-secondary); 
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
+#target-time-display {
+    color: #ffc000;
+    text-shadow: 0 0 10px rgba(255, 192, 0, 0.5);
+}
+/* Light Mode for Timer Digits */
+body.light-mode #target-time-display {
+    color: #d89f00; /* Darker gold for contrast */
+    text-shadow: none;
+}
+body.light-mode #current-timer-display {
+    color: var(--color-text-dark); /* Dark text for current time */
+}
+#current-timer-display {
+    color: var(--color-text-light);
+    font-size: 85px;
+    margin-bottom: 25px;
+}
+/* --- ACTION AREA (The Big Button - Bottom Segment) --- */
+#action-area {
+    background: #10151f;
+    border: 2px solid var(--color-secondary);
+    color: var(--color-text-light);
+    width: 100%;
+    padding: 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s, border-color 0.2s, animation 0.2s;
+    text-transform: uppercase;
+    font-weight: 700;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.7);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
 
-        /* Subtitle (Tagline) */
-        #aesthetic-subtitle {
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--color-accent); 
-            text-shadow: 0 0 5px var(--color-accent);
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            margin-bottom: 20px;
-            transition: color 0.3s, text-shadow 0.3s; 
-        }
-        /* Light Mode for Tagline */
-        body.light-mode #aesthetic-subtitle {
-            color: var(--color-text-dark); 
-            text-shadow: 0 0 2px rgba(0, 0, 0, 0.2); 
-        }
-        
-        /* --- TARGET TIME BLOCK (Top Segment) --- */
-        .time-display-box {
-            background: #10151f; 
-            width: 100%;
-            padding: 15px 0;
-            border-radius: 8px;
-            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
-            border: 1px solid var(--segment-border); 
-            margin-bottom: 5px; 
-        }
-        /* Light Mode for Target Time Box */
-        body.light-mode .time-display-box {
-            background: #ffffff;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
+#action-area:hover {
+    background: #1a2233;
+    box-shadow: 0 0 30px rgba(0, 229, 255, 0.4);
+}
 
-        .time-label {
-            font-size: 12px;
-            font-weight: 500;
-            color: var(--color-accent); 
-            margin-bottom: 5px;
-            text-transform: uppercase;
-        }
+/* Light Mode Overrides for Action Button */
+body.light-mode #action-area {
+    background: var(--color-secondary); /* Use the vibrant cyan/blue highlight */
+    border-color: var(--color-primary); /* Darker border for definition */
+    color: var(--dark-contrast); /* Black text on bright background (default action text color) */
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3); /* Stronger shadow */
+}
 
-        /* --- TIMER DIGITS STYLES --- */
-        .digit-display {
-            font-family: 'Share Tech Mono', monospace; 
-            font-size: 50px;
-            font-weight: 700;
-            line-height: 1;
-        }
-        
-        #target-time-display {
-            color: #ffc000; 
-            text-shadow: 0 0 10px rgba(255, 192, 0, 0.5);
-        }
-        /* Light Mode for Timer Digits */
-        body.light-mode #target-time-display {
-            color: #d89f00; /* Darker gold for contrast */
-            text-shadow: none;
-        }
-        body.light-mode #current-timer-display {
-            color: var(--color-text-dark); /* Dark text for current time */
-        }
+body.light-mode #action-area:hover {
+    background: #00bcd4; /* Slightly darker hover color */
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.4);
+}
+#action-text {
+    font-size: 24px;
+    margin-bottom: 10px;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+}
+/* Light Mode for Action Text */
+body.light-mode #action-text {
+    color: var(--dark-contrast); /* Ensure action text is dark */
+    text-shadow: none;
+}
+/* Result message box style */
+#result-message {
+    font-size: 14px;
+    font-weight: 500;
+    text-align: center;
+    color: rgba(0, 255, 255, 0.8);
+    line-height: 1.4;
+}
+/* Light Mode for Result Message */
+body.light-mode #result-message {
+    color: var(--dark-contrast); /* Ensure result message text is dark */
+}
 
-        #current-timer-display {
-            color: var(--color-text-light); 
-            font-size: 85px; 
-            margin-bottom: 25px; 
-        }
+/* Style for the colored part of the result message (The Tier Text) */
+#result-message .tier-text {
+    font-weight: 900;
+    padding: 3px 8px;
+    border-radius: 4px;
+    text-shadow: none;
+    background: transparent;
+    color: white;
+    display: inline-block;
+}
+/* --- State specific styles (Result Tiers) --- */
 
-        /* --- ACTION AREA (The Big Button - Bottom Segment) --- */
-        #action-area {
-            background: #10151f; 
-            border: 2px solid var(--color-secondary); 
-            color: var(--color-text-light); 
-            width: 100%;
-            padding: 20px;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: background 0.2s, box-shadow 0.2s, border-color 0.2s, animation 0.2s;
-            text-transform: uppercase;
-            font-weight: 700;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.7); 
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        
-        #action-area:hover { 
-            background: #1a2233; 
-            box-shadow: 0 0 30px rgba(0, 229, 255, 0.4);
-        }
-        
-        /* Light Mode Overrides for Action Button */
-        body.light-mode #action-area {
-            background: var(--color-secondary); /* Use the vibrant cyan/blue highlight */
-            border-color: var(--color-primary); /* Darker border for definition */
-            color: var(--dark-contrast); /* Black text on bright background (default action text color) */
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3); /* Stronger shadow */
-        }
-        
-        body.light-mode #action-area:hover {
-            background: #00bcd4; /* Slightly darker hover color */
-            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.4);
-        }
+/* Animation for Running State (Pulsing Glow) */
+@keyframes neon-pulse {
+    0% { box-shadow: 0 0 10px rgba(0, 255, 128, 0.5), 0 0 40px rgba(0, 255, 128, 0.2); }
+    50% { box-shadow: 0 0 20px rgba(0, 255, 128, 0.8), 0 0 60px rgba(0, 255, 128, 0.4); }
+    100% { box-shadow: 0 0 10px rgba(0, 255, 128, 0.5), 0 0 40px rgba(0, 255, 128, 0.2); }
+}
+/* Running State Border and Animation */
+.state-running {
+    border-color: var(--color-accent) !important;
+    animation: neon-pulse 1.5s ease-in-out infinite alternate;
+}
+/* ELITE - Green Accent */
+.state-great .tier-text { background: var(--tier-great) !important; color: var(--dark-contrast) !important; }
+.state-great { border-color: var(--tier-great) !important; }
+/* SUCCESS - Light Green Accent */
+.state-good .tier-text { background: var(--tier-good) !important; color: var(--dark-contrast) !important; }
+.state-good { border-color: var(--tier-good) !important; }
+/* ACCEPTABLE - Blue Accent */
+.state-ok .tier-text { background: var(--tier-ok) !important; color: white !important; }
+.state-ok { border-color: var(--tier-ok) !important; }
+/* FAILURE - Red Accent */
+.state-bad .tier-text { background: var(--tier-bad) !important; color: white !important; }
+.state-bad { border-color: var(--tier-bad) !important; }
+/* Developer Credit */
+#developer-credit {
+    margin-top: auto;
+    font-size: 11px;
+    color: rgba(0, 255, 128, 0.7);
+    text-shadow: 0 0 5px rgba(0, 255, 128, 0.4);
+    letter-spacing: 0.5px;
+    padding-top: 15px;
+    transition: color 0.3s, text-shadow 0.3s;
+}
+/* Light Mode for Developer Credit */
+body.light-mode #developer-credit {
+    color: var(--color-text-dark);
+    text-shadow: none;
+}
+/* --- FIXED CONTROL BUTTONS (Rules, Settings, Chat, Index) and Modals --- */
+.fixed-control-btn {
+    /* DEFAULT DARK MODE STYLE (used by RULES | PROTOCOL) */
+    background: var(--color-primary);
+    border: 1px solid var(--color-accent);
+    padding: 8px 15px;
+    border-radius: 5px;
+    color: var(--color-accent);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s ease;
+    box-shadow: 0 0 5px rgba(0, 255, 128, 0.5);
+    text-transform: uppercase;
+    position: fixed;
+    z-index: 105;
+}
+.fixed-control-btn:hover { background: #00796b; box-shadow: 0 0 10px var(--color-accent); }
 
+/* --- CUSTOM STYLES FOR BUTTON REPOSITIONING & STYLING --- */
 
-        #action-text {
-            font-size: 24px;
-            margin-bottom: 10px;
-            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5); 
-        }
-        /* Light Mode for Action Text */
-        body.light-mode #action-text {
-            color: var(--dark-contrast); /* Ensure action text is dark */
-            text-shadow: none;
-        }
+/* BACK TO INDEX (Top Left) */
+#indexBtn {
+    top: 20px;
+    left: 20px; 
+    right: auto; 
+}
+/* RULES | PROTOCOL (Top Right) */
+#rulesBtn { 
+    top: 20px; 
+    right: 20px; 
+}
 
+/* CHAT ICON AND SETTINGS ICON BASE STYLE */
+.circular-action-btn {
+    position: fixed;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    color: var(--dark-contrast); 
+    line-height: 50px;
+    text-align: center;
+    cursor: pointer;
+    z-index: 110;
+    font-size: 24px;
+    font-weight: 700;
+    transition: 0.2s ease;
+    border: 2px solid var(--color-primary); 
+}
 
-        /* Result message box style */
-        #result-message {
-            font-size: 14px;
-            font-weight: 500;
-            text-align: center;
-            color: rgba(0, 255, 255, 0.8); 
-            line-height: 1.4;
-        }
-        /* Light Mode for Result Message */
-        body.light-mode #result-message {
-            color: var(--dark-contrast); /* Ensure result message text is dark */
-        }
-        
-        /* Style for the colored part of the result message (The Tier Text) */
-        #result-message .tier-text {
-            font-weight: 900;
-            padding: 3px 8px;
-            border-radius: 4px;
-            text-shadow: none; 
-            background: transparent;
-            color: white; 
-            display: inline-block;
-        }
+/* SETTINGS ICON (CYAN/SECONDARY COLOR) - TO PREVENT CAMOUFLAGE */
+#settingsBtn {
+    bottom: 20px; 
+    right: 20px; 
+    background: var(--color-secondary); /* Vibrant Cyan */
+    box-shadow: 0 0 20px var(--color-secondary); /* Cyan glow */
+} 
+#settingsBtn:hover {
+    box-shadow: 0 0 30px var(--color-secondary), 0 0 10px var(--color-secondary);
+    transform: scale(1.05);
+}
 
-        /* --- State specific styles (Result Tiers) --- */
-        
-        /* Animation for Running State (Pulsing Glow) */
-        @keyframes neon-pulse {
-            0% { box-shadow: 0 0 10px rgba(0, 255, 128, 0.5), 0 0 40px rgba(0, 255, 128, 0.2); }
-            50% { box-shadow: 0 0 20px rgba(0, 255, 128, 0.8), 0 0 60px rgba(0, 255, 128, 0.4); }
-            100% { box-shadow: 0 0 10px rgba(0, 255, 128, 0.5), 0 0 40px rgba(0, 255, 128, 0.2); }
-        }
+/* CHAT ICON (GREEN/ACCENT COLOR) */
+#chatIcon { 
+    bottom: 20px; 
+    right: 90px;
+    background: var(--color-accent); /* Neon Green */
+    box-shadow: 0 0 20px var(--color-accent); /* Green glow */
+} 
+#chatIcon:hover {
+    box-shadow: 0 0 30px var(--color-secondary), 0 0 10px var(--color-accent);
+    transform: scale(1.05);
+}
 
-        /* Running State Border and Animation */
-        .state-running {
-            border-color: var(--color-accent) !important; 
-            animation: neon-pulse 1.5s ease-in-out infinite alternate; 
-        }
+/* Light Mode Overrides for Icons */
+body.light-mode #settingsBtn {
+    background: var(--color-secondary);
+    box-shadow: 0 0 15px rgba(0, 151, 167, 0.8);
+    border: 2px solid var(--color-primary);
+}
+body.light-mode #chatIcon {
+    background: var(--color-accent);
+    box-shadow: 0 0 15px rgba(56, 142, 60, 0.8);
+    border: 2px solid var(--color-primary);
+}
 
-        /* ELITE - Green Accent */
-        .state-great .tier-text { background: var(--tier-great) !important; color: var(--dark-contrast) !important; } 
-        .state-great { border-color: var(--tier-great) !important; } 
+.fixed-panel-common {
+    position: fixed; width: 300px; max-height: 85vh; overflow-y: hidden; background: var(--modal-bg); border-radius: 10px; padding: 0; z-index: 210; opacity: 0; visibility: hidden;
+    transition: 0.3s ease; transform: scale(0.9); border: 2px solid var(--color-secondary); box-shadow: 0 10px 30px rgba(0,0,0,0.9); display: flex; flex-direction: column;
+}
+.fixed-panel-common.visible { opacity: 1; visibility: visible; transform: scale(1); }
+.modal-header, .chat-header {
+    padding: 10px 20px; background: var(--color-primary); color: var(--color-accent); font-weight: 700; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--color-accent);
+    flex-shrink: 0;
+}
 
-        /* SUCCESS - Light Green Accent */
-        .state-good .tier-text { background: var(--tier-good) !important; color: var(--dark-contrast) !important; }
-        .state-good { border-color: var(--tier-good) !important; }
+.modal-body {
+    padding: 20px; color: var(--color-text-light); overflow-y: auto; line-height: 1.6; font-size: 14px;
+}
 
-        /* ACCEPTABLE - Blue Accent */
-        .state-ok .tier-text { background: var(--tier-ok) !important; color: white !important; } 
-        .state-ok { border-color: var(--tier-ok) !important; }
+.modal-close-btn {
+    background: transparent; border: none; color: var(--color-accent); font-size: 20px; cursor: pointer; padding: 5px; line-height: 1; margin-right: -10px; transition: color 0.1s;
+}
+.modal-close-btn:hover { color: var(--color-secondary); }
 
-        /* FAILURE - Red Accent */
-        .state-bad .tier-text { background: var(--tier-bad) !important; color: white !important; } 
-        .state-bad { border-color: var(--tier-bad) !important; }
+#instructions { top: 60px; right: 20px; transform-origin: top right; }
+#settingsModal { bottom: 70px; right: 20px; transform-origin: bottom right; }
+#chatPanel { bottom: 70px; right: 20px; transform-origin: bottom right; }
 
-        /* Developer Credit */
-        #developer-credit {
-            margin-top: auto; 
-            font-size: 11px; 
-            color: rgba(0, 255, 128, 0.7); 
-            text-shadow: 0 0 5px rgba(0, 255, 128, 0.4); 
-            letter-spacing: 0.5px;
-            padding-top: 15px; 
-            transition: color 0.3s, text-shadow 0.3s; 
-        }
-        /* Light Mode for Developer Credit */
-        body.light-mode #developer-credit {
-            color: var(--color-text-dark); 
-            text-shadow: none; 
-        }
+#settingsModal .modal-body { max-height: calc(85vh - 44px - 40px); }
+.setting-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(0, 229, 255, 0.1); }
+.setting-row:last-of-type { border-bottom: none; }
+.setting-row span { font-weight: 500; color: var(--color-text-light); }
 
+/* --- FIX FOR SETTINGS TOGGLE BUTTONS CAMOUFLAGE IN DARK MODE --- */
+/* The general .fixed-control-btn style is what we want for these in Dark Mode */
+#settingsModal .fixed-control-btn {
+    /* Overriding the inline style's background/color back to the standard dark button style */
+    background: var(--color-primary) !important;
+    color: var(--color-accent) !important;
+    box-shadow: 0 0 8px rgba(0, 255, 128, 0.7) !important;
+    border: 2px solid var(--color-accent) !important;
+}
 
-        /* --- FIXED CONTROL BUTTONS (Rules, Settings, Chat, Index) and Modals --- */
-        .fixed-control-btn { 
-            background: var(--color-primary); 
-            border: 1px solid var(--color-accent); 
-            padding: 8px 15px; 
-            border-radius: 5px; 
-            color: var(--color-accent); 
-            font-size: 13px; 
-            font-weight: 600; 
-            cursor: pointer; 
-            transition: 0.2s ease; 
-            box-shadow: 0 0 5px rgba(0, 255, 128, 0.5); 
-            text-transform: uppercase;
-            position: fixed; 
-            z-index: 105;
-        }
-        .fixed-control-btn:hover { background: #00796b; box-shadow: 0 0 10px var(--color-accent); }
+/* Light Mode specific override for the setting buttons */
+body.light-mode #settingsModal .fixed-control-btn {
+    background: var(--color-secondary) !important;
+    color: var(--dark-contrast) !important; /* Ensures black text in light mode */
+    box-shadow: 0 0 8px rgba(0, 151, 167, 0.7) !important;
+    border: 2px solid var(--color-primary) !important;
+}
+/* --- END FIX --- */
 
-        #rulesBtn { top: 20px; right: 20px; }
-        /* NEW BUTTON POSITIONING */
-        #indexBtn { top: 20px; right: 180px; } 
+#chat-messages { flex-grow: 1; padding: 10px; overflow-y: auto; background: var(--chat-bg); color: var(--color-text-light); max-height: 300px; }
+.chat-message { margin-bottom: 12px; padding: 8px 12px; border-radius: 8px; font-size: 13px; line-height: 1.4; max-width: 80%; }
+.chat-system { background: rgba(0, 229, 255, 0.1); color: var(--color-secondary); margin-right: auto; border: 1px solid var(--color-secondary); text-align: left; }
+.chat-user { background: var(--color-primary); color: var(--color-text-light); margin-left: auto; text-align: right; }
+#chat-menu-area { display: flex; flex-direction: column; padding: 10px 20px; gap: 8px; border-top: 1px solid rgba(0, 229, 255, 0.2); background: var(--chat-bg);
+flex-shrink: 0; }
+.chat-option-btn { background: var(--color-primary); color: var(--color-text-light); border: 1px solid var(--color-accent); padding: 10px; border-radius: 5px; cursor: pointer; text-align: left;
+font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 500; transition: background 0.1s, box-shadow 0.2s; }
+.chat-option-btn:hover { background: #00796b; box-shadow: 0 0 8px rgba(0, 255, 128, 0.5); }
+/* Mobile adjustments */
+@media (max-width: 650px) {
+    /* Top Left/Right */
+    #rulesBtn { top: 10px; right: 10px; }
+    #indexBtn { top: 10px; left: 10px; right: auto; } /* Moved index to top left */
+    
+    /* Bottom Right (Standardized) */
+    #settingsBtn { bottom: 10px; right: 10px; }
+    #chatIcon { bottom: 10px; right: 80px; }
 
-        #settingsBtn { bottom: 20px; right: 20px; padding: 10px 18px; font-size: 16px; text-transform: none; }
-        #chatIcon { position: fixed; bottom: 20px; right: 110px; width: 50px; height: 50px; border-radius: 50%; background: var(--color-accent); color: black; line-height: 50px; text-align: center; cursor: pointer; box-shadow: 0 0 20px var(--color-accent); z-index: 110; font-size: 24px; font-weight: 700; }
-        
-        .fixed-panel-common { 
-            position: fixed; width: 300px; max-height: 85vh; overflow-y: hidden; background: var(--modal-bg); border-radius: 10px; padding: 0; z-index: 210; opacity: 0; visibility: hidden; transition: 0.3s ease; transform: scale(0.9); border: 2px solid var(--color-secondary); box-shadow: 0 10px 30px rgba(0,0,0,0.9); display: flex; flex-direction: column;
-        }
-        .fixed-panel-common.visible { opacity: 1; visibility: visible; transform: scale(1); }
-
-        .modal-header, .chat-header {
-            padding: 10px 20px; background: var(--color-primary); color: var(--color-accent); font-weight: 700; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--color-accent); flex-shrink: 0; 
-        }
-        
-        .modal-body {
-            padding: 20px; color: var(--color-text-light); overflow-y: auto; line-height: 1.6; font-size: 14px;
-        }
-        
-        .modal-close-btn {
-            background: transparent; border: none; color: var(--color-accent); font-size: 20px; cursor: pointer; padding: 5px; line-height: 1; margin-right: -10px; transition: color 0.1s;
-        }
-        .modal-close-btn:hover { color: var(--color-secondary); }
-        
-        #instructions { top: 60px; right: 20px; transform-origin: top right; }
-        #settingsModal { bottom: 70px; right: 20px; transform-origin: bottom right; }
-        #chatPanel { bottom: 70px; right: 20px; transform-origin: bottom right; }
-        
-        #settingsModal .modal-body { max-height: calc(85vh - 44px - 40px); }
-        .setting-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(0, 229, 255, 0.1); }
-        .setting-row:last-of-type { border-bottom: none; }
-        .setting-row span { font-weight: 500; color: var(--color-text-light); }
-        
-        #chat-messages { flex-grow: 1; padding: 10px; overflow-y: auto; background: var(--chat-bg); color: var(--color-text-light); max-height: 300px; }
-        .chat-message { margin-bottom: 12px; padding: 8px 12px; border-radius: 8px; font-size: 13px; line-height: 1.4; max-width: 80%; }
-        .chat-system { background: rgba(0, 229, 255, 0.1); color: var(--color-secondary); margin-right: auto; border: 1px solid var(--color-secondary); text-align: left; }
-        .chat-user { background: var(--color-primary); color: var(--color-text-light); margin-left: auto; text-align: right; }
-        #chat-menu-area { display: flex; flex-direction: column; padding: 10px 20px; gap: 8px; border-top: 1px solid rgba(0, 229, 255, 0.2); background: var(--chat-bg); flex-shrink: 0; }
-        .chat-option-btn { background: var(--color-primary); color: var(--color-text-light); border: 1px solid var(--color-accent); padding: 10px; border-radius: 5px; cursor: pointer; text-align: left; font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 500; transition: background 0.1s, box-shadow 0.2s; }
-        .chat-option-btn:hover { background: #00796b; box-shadow: 0 0 8px rgba(0, 255, 128, 0.5); }
-
-
-        /* Mobile adjustments */
-        @media (max-width: 650px) {
-             #rulesBtn { top: 10px; right: 10px; }
-             /* NEW BUTTON POSITIONING FOR MOBILE */
-             #indexBtn { top: 10px; right: 130px; } 
-
-             #settingsBtn { bottom: 10px; right: 10px; }
-             #chatIcon { right: 80px; bottom: 10px; } 
-             #chatPanel { right: 5%; left: 5%; width: 90%; height: 350px; bottom: 65px; }
-             #instructions { top: 60px; right: 5%; left: 5%; width: 90%;}
-             #settingsModal { bottom: 60px; right: 5%; left: 5%; width: 90%; }
-             #chat-messages { max-height: 250px; }
-        }
-    </style>
+    #chatPanel { right: 5%; left: 5%; width: 90%; height: 350px; bottom: 65px; }
+    #instructions { top: 60px; right: 5%; left: 5%; width: 90%;}
+    #settingsModal { bottom: 60px; right: 5%; left: 5%; width: 90%; }
+    #chat-messages { max-height: 250px; }
+}
+</style>
 </head>
 <body class="dark-mode">
+
+<button id="indexBtn" class="fixed-control-btn" onclick="window.location.href='index.html'">Back to INDEX</button> 
+<button id="rulesBtn" class="fixed-control-btn" onclick="toggleExclusivePanel(instructions)">RULES | PROTOCOL</button> 
+
+<div id="settingsBtn" class="circular-action-btn" onclick="toggleExclusivePanel(settingsModal)"> ⚙️ </div> 
+<div id="chatIcon" class="circular-action-btn" onclick="toggleExclusivePanel(chatPanel)"> 💬 </div> 
+<div id="chatPanel" class="fixed-panel-common">
+    <div class="chat-header">
+        SYSTEM SUPPORT MENU
+        <button class="modal-close-btn" onclick="toggleExclusivePanel(chatPanel)"> ✖ </button>
+    </div>
+    <div id="chat-messages">
+    </div>
+    <div id="chat-menu-area">
+    </div>
+</div>
+<div id="instructions" class="fixed-panel-common">
+    <div class="modal-header">
+        PROTOCOL GUIDELINES
+        <button class="modal-close-btn" onclick="toggleExclusivePanel(instructions)"> ✖ </button>
+    </div>
+    <div class="modal-body">
+        <p>The objective is to stop the running timer as close as possible to the **Target Time**.</p>
+        <ol>
+            <li>The system will display a random **Target Time** (3.000s to 8.000s).</li>
+            <li>Click the central **Action Area** to **START** the timer.</li>
+            <li>When you believe the running time is equal to the target time, click the **Action Area** again to **STOP** the timer.</li>
+        </ol>
+        <h4 style="margin-bottom: 5px; color: var(--color-accent);">SCORING TIERS (Accuracy is key):</h4>
+        <ul>
+            <li><span style="color: var(--tier-great);">**ELITE:**</span> $\le 50$ ms difference.</li>
+            <li><span style="color: var(--tier-good);">**SUCCESS:**</span> $\le 200$ ms difference.</li>
+            <li><span style="color: var(--tier-ok);">**ACCEPTABLE:**</span> $\le 500$ ms difference.</li>
+            <li><span style="color: var(--tier-bad);">**FAILURE:**</span> $> 500$ ms difference.</li>
+        </ul>
+    </div>
+</div>
+<div id="settingsModal" class="fixed-panel-common">
+    <div class="modal-header">
+        SYSTEM SETTINGS
+        <button class="modal-close-btn" onclick="toggleExclusivePanel(settingsModal)"> ✖ </button>
+    </div>
+    <div class="modal-body">
+        <div class="setting-row">
+            <span>Theme Mode</span>
+            <button id="themeToggleBtn" class="fixed-control-btn" onclick="toggleTheme()" style="position: static; margin: 0; padding: 5px 10px; font-size: 12px; border-radius: 5px;"> 🌙  Toggle</button>
+        </div>
+        <div class="setting-row">
+            <span>Sound Effects</span>
+            <button id="soundToggleBtn" class="fixed-control-btn" onclick="toggleSound()" style="position: static; margin: 0; padding: 5px 10px; font-size: 12px; border-radius: 5px;"> 🔊  ON</button>
+        </div>
+        <hr style="border-color: rgba(0, 229, 255, 0.2); margin: 15px 0;">
+        <p style="font-size: 12px; color: var(--color-secondary); text-align: center;">*For technical assistance, please use the Support Menu ( 💬 ).</p>
+    </div>
+</div>
+
+<div id="game-box">
+
+    <h2> 🎯  Precision Stop Protocol</h2>
+
+    <div id="aesthetic-subtitle">HIT THE MARK. MASTER THE MILLISECOND.</div>
+    <div class="time-display-box">
+        <div class="time-label">TARGET TIME</div>
+        <div id="target-time-display" class="digit-display">X.XXX</div>
+    </div>
+    <div id="current-timer-display" class="digit-display">0.000</div>
+    <div id="action-area" class="state-ready" onclick="precisionStop.handleAction()">
+        <span id="action-text">CLICK TO START</span>
+        <div id="result-message">Set the clock! Aim for the target time above.</div>
+    </div>
+    <div id="developer-credit">Developed by Aarav Sinha</div>
+
+</div>
+<div id="footer" style="position: fixed; bottom: 10px; left: 10px; font-size: 12px; color: rgba(0, 229, 255, 0.5); text-shadow: 0 0 5px rgba(0, 229, 255, 0.5); z-index: 5;">
+    Protocol System 3.2
+</div>
+<script>
+// --- GAME STATE CONSTANTS & DOM ELEMENTS ---
+const STATE_READY = 'READY';
+const STATE_RUNNING = 'RUNNING';
+const STATE_RESULT = 'RESULT';
+const targetTimeDisplay = document.getElementById('target-time-display');
+const currentTimerDisplay = document.getElementById('current-timer-display');
+const actionArea = document.getElementById('action-area');
+const actionText = document.getElementById('action-text');
+const resultMessage = document.getElementById('result-message');
+const themeToggleBtn = document.getElementById('themeToggleBtn');
+const soundToggleBtn = document.getElementById('soundToggleBtn');
+const body = document.body;
+
+// --- TIMER & GAME VARIABLES ---
+let gameState = STATE_READY;
+let timerStart;
+let timerInterval;
+let targetTime;
+let soundOn = true;
+const maxTarget = 8.000;
+const minTarget = 3.000;
+
+// --- AUDIO SETUP (Web Audio API - Tone Generation) ---
+const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+/**
+ * Plays a simple synthetic tone using the Web Audio API.
+ * @param {number} frequency - The pitch of the tone (Hz).
+ * @param {number} duration - The duration of the tone (seconds).
+ * @param {number} volume - The volume level (0 to 1).
+ * @param {string} [type='sine'] - The oscillator waveform type ('sine', 'square', 'sawtooth', 'triangle').
+ */
+function playTone(frequency, duration, volume, type = 'sine') {
+    if (!soundOn) return;
+
+    // Must be triggered by a user action to avoid browser restriction
+    if (audioContext.state === 'suspended') {
+        audioContext.resume();
+    }
+
+    // Create oscillator and gain node
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+
+    // Set properties
+    oscillator.type = type;
+    oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+
+    // Set volume with a short fade-in/out to avoid clicks
+    gainNode.gain.setValueAtTime(0.001, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(volume, audioContext.currentTime + 0.01);
+    gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + duration - 0.05);
+
+    // Connect nodes
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+
+    // Start and stop the oscillator
+    oscillator.start();
+    oscillator.stop(audioContext.currentTime + duration);
+}
+
+// Specific Sound Effects
+function playStartSound() {
+    playTone(880, 0.1, 0.3, 'square'); // A high-pitched, quick beep
+}
+
+function playSuccessSound(tier) {
+    if (tier === 'state-great') {
+        // Elite: High rising pitch
+        playTone(1000, 0.1, 0.5, 'sine');
+        setTimeout(() => playTone(1500, 0.15, 0.5, 'sine'), 50);
+    } else if (tier === 'state-good') {
+        // Success: Standard success tone
+        playTone(700, 0.15, 0.4, 'sine');
+    } else { // Acceptable/Ok
+        // Acceptable: Lower success tone
+        playTone(500, 0.1, 0.3, 'sine');
+    }
+}
+
+function playFailureSound() {
+    playTone(150, 0.3, 0.6, 'sawtooth'); // A low, buzzing error sound
+}
+
+// --- CORE GAME LOGIC ---
+
+// Helper function to format time in seconds.milliseconds
+function formatTime(ms) {
+    const totalSeconds = ms / 1000;
+    const seconds = Math.floor(totalSeconds).toString();
+    const milliseconds = Math.floor((totalSeconds - seconds) * 1000).toString().padStart(3, '0');
+    return `${seconds}.${milliseconds}`;
+}
+
+function generateTargetTime() {
+    // Generate a number between minTarget (3.000) and maxTarget (8.000)
+    targetTime = Math.random() * (maxTarget - minTarget) + minTarget;
+    // Round to 3 decimal places
+    targetTime = Math.round(targetTime * 1000) / 1000;
+    targetTimeDisplay.textContent = targetTime.toFixed(3);
+}
+
+function startGame() {
+    generateTargetTime();
+    gameState = STATE_RUNNING;
+    timerStart = performance.now();
+    actionArea.classList.remove('state-ready', 'state-result', 'state-great', 'state-good', 'state-ok', 'state-bad');
+    actionArea.classList.add('state-running');
+    actionText.textContent = "CLICK TO STOP";
+    resultMessage.innerHTML = "SYSTEM ENGAGED. MONITORING ALIGNMENT...";
+    currentTimerDisplay.textContent = "0.000";
+
+    // Play start sound
+    playStartSound();
+
+    timerInterval = setInterval(updateTimer, 10);
+}
+
+function updateTimer() {
+    const elapsedTime = performance.now() - timerStart;
+    currentTimerDisplay.textContent = formatTime(elapsedTime);
+}
+
+function stopGame() {
+    clearInterval(timerInterval);
+    const stopTime = (performance.now() - timerStart) / 1000; // Convert to seconds
+    gameState = STATE_RESULT;
+    actionArea.classList.remove('state-running');
+    actionArea.classList.add('state-result');
+    actionText.textContent = "RETRY PROTOCOL";
+
+    const difference = Math.abs(stopTime - targetTime);
+
+    let tier, message, colorClass;
+
+    if (difference <= 0.050) { // 50ms
+        tier = 'ELITE ALIGNMENT';
+        message = `CORE ALIGNMENT ACHIEVED! Deviation: ${(difference * 1000).toFixed(2)} ms.`;
+        colorClass = 'state-great';
+        playSuccessSound(colorClass);
+    } else if (difference <= 0.200) { // 200ms
+        tier = 'SUCCESS';
+        message = `PARAMETER MATCH. Deviation: ${(difference * 1000).toFixed(2)} ms.`;
+        colorClass = 'state-good';
+        playSuccessSound(colorClass);
+    } else if (difference <= 0.500) { // 500ms
+        tier = 'ACCEPTABLE';
+        message = `STABLE. Deviation: ${(difference * 1000).toFixed(2)} ms.`;
+        colorClass = 'state-ok';
+        playSuccessSound(colorClass);
+    } else {
+        tier = 'FAILURE';
+        message = `UNSTABLE. Deviation: ${(difference * 1000).toFixed(2)} ms. Re-engage protocol.`;
+        colorClass = 'state-bad';
+        playFailureSound();
+    }
+
+    actionArea.classList.add(colorClass);
+    resultMessage.innerHTML = `<span class='tier-text'>${tier}</span><br>Stop Time: ${stopTime.toFixed(3)}s. Target: ${targetTime.toFixed(3)}s. Diff: ${(difference * 1000).toFixed(2)} ms.`;
+}
+
+const precisionStop = {
+    handleAction: function() {
+        if (gameState === STATE_READY || gameState === STATE_RESULT) {
+            startGame();
+        } else if (gameState === STATE_RUNNING) {
+            stopGame();
+        }
+    }
+};
+
+// --- MODAL & SETTINGS LOGIC ---
+
+const instructions = document.getElementById('instructions');
+const settingsModal = document.getElementById('settingsModal');
+const chatPanel = document.getElementById('chatPanel');
+
+// Array of all panels for easy iteration
+const allPanels = [instructions, settingsModal, chatPanel];
+
+/**
+ * Toggles a panel, ensuring only one panel is open at a time.
+ * If the panel is already open, it closes it.
+ * If another panel is open, it closes others and opens the requested one.
+ * @param {HTMLElement} panelToOpen - The DOM element of the panel to be toggled.
+ */
+function toggleExclusivePanel(panelToOpen) {
+    const isPanelCurrentlyOpen = panelToOpen.classList.contains('visible');
     
-    <button id="indexBtn" class="fixed-control-btn" onclick="window.location.href='#'">🏠 INDEX</button>
+    // Close all panels first
+    allPanels.forEach(panel => {
+        if (panel.classList.contains('visible')) {
+            panel.classList.remove('visible');
+        }
+    });
 
-    <button id="rulesBtn" class="fixed-control-btn" onclick="togglePanel(instructions)">RULES | PROTOCOL</button>
+    // If the panel was not open, open it now
+    if (!isPanelCurrentlyOpen) {
+        panelToOpen.classList.add('visible');
+        
+        // Special case: re-initialize chat menu if opening the chat panel
+        if (panelToOpen === chatPanel) {
+            initializeChat();
+        }
+    }
+}
 
-    <div id="chatIcon" onclick="toggleChatPanel()">💬</div>
 
-    <button id="settingsBtn" class="fixed-control-btn" onclick="toggleSettingsModal()">⚙️</button>
+function toggleTheme() {
+    body.classList.toggle('light-mode');
+    const isLightMode = body.classList.contains('light-mode');
+    if (isLightMode) {
+        themeToggleBtn.textContent = ' ☀️  Toggle';
+    } else {
+        themeToggleBtn.textContent = ' 🌙  Toggle';
+    }
+    // Update local storage if needed
+}
 
-    <div id="chatPanel" class="fixed-panel-common">
-        <div class="chat-header">
-            SYSTEM SUPPORT MENU
-            <button class="modal-close-btn" onclick="toggleChatPanel()">✖</button>
-        </div>
-        <div id="chat-messages"> 
-            </div>
-        <div id="chat-menu-area">
-            </div>
-    </div>
+function toggleSound() {
+    soundOn = !soundOn;
+    if (soundOn) {
+        soundToggleBtn.textContent = ' 🔊  ON';
+    } else {
+        soundToggleBtn.textContent = ' 🔇  OFF';
+    }
+}
 
-    <div id="instructions" class="fixed-panel-common">
-        <div class="modal-header">
-            PROTOCOL GUIDELINES
-            <button class="modal-close-btn" onclick="togglePanel(instructions)">✖</button>
-        </div>
-        <div class="modal-body">
-            <p>The objective is to stop the running timer as close as possible to the **Target Time**.</p>
-            <ol>
-                <li>The system will display a random **Target Time** (3.000s to 8.000s).</li>
-                <li>Click the central **Action Area** to **START** the timer.</li>
-                <li>When you believe the running time is equal to the target time, click the **Action Area** again to **STOP** the timer.</li>
-            </ol>
-            <h4 style="margin-bottom: 5px; color: var(--color-accent);">SCORING TIERS (Accuracy is key):</h4>
-            <ul>
-                <li><span style="color: var(--tier-great);">**ELITE:**</span> $\le 50$ ms difference.</li>
-                <li><span style="color: var(--tier-good);">**SUCCESS:**</span> $\le 200$ ms difference.</li>
-                <li><span style="color: var(--tier-ok);">**ACCEPTABLE:**</span> $\le 500$ ms difference.</li>
-                <li><span style="color: var(--tier-bad);">**FAILURE:**</span> $> 500$ ms difference.</li>
-            </ul>
-        </div>
-    </div>
+// --- CHAT SYSTEM (Simplified/Stubbed for structure) ---
+const chatMessages = document.getElementById('chat-messages');
+const chatMenuArea = document.getElementById('chat-menu-area');
 
-    <div id="settingsModal" class="fixed-panel-common">
-        <div class="modal-header">
-            SYSTEM SETTINGS
-            <button class="modal-close-btn" onclick="toggleSettingsModal()">✖</button>
-        </div>
-        <div class="modal-body">
-            <div class="setting-row">
-                <span>Theme Mode</span>
-                <button id="themeToggleBtn" class="fixed-control-btn" onclick="toggleTheme()" style="position: static; margin: 0; box-shadow: none; border-bottom: none; padding: 5px 10px; font-size: 12px; background: var(--color-secondary); color: black;">🌙 Toggle</button>
-            </div>
-            <div class="setting-row">
-                <span>Sound Effects</span>
-                <button id="soundToggleBtn" class="fixed-control-btn" onclick="toggleSound()" style="position: static; margin: 0; box-shadow: none; border-bottom: none; padding: 5px 10px; font-size: 12px; background: var(--color-secondary); color: black;">🔊 ON</button>
-            </div>
-            <hr style="border-color: rgba(0, 229, 255, 0.2); margin: 15px 0;">
-            <p style="font-size: 12px; color: var(--color-secondary); text-align: center;">*For technical assistance, please use the Support Menu (💬).</p>
-        </div>
-    </div>
+const responseDatabase = {
+    'INITIAL': {
+        system: "Welcome to SYSTEM SUPPORT. How may I assist you with the Precision Stop Protocol?",
+        options: [
+            { text: "Explain the Rules again.", next: "RULES" },
+            { text: "The timer is not working.", next: "TIMER_ISSUE" },
+            { text: "Suggest a Strategy.", next: "STRATEGY" },
+            { text: "Nevermind, close chat.", next: "CLOSE" }
+        ]
+    },
+    'RULES': {
+        system: "The goal is simple: **stop the timer as close to the TARGET TIME as possible.** Click once to start, click again to stop.",
+        options: [
+            { text: "Got it, back to menu.", next: "INITIAL" }
+        ]
+    },
+    'TIMER_ISSUE': {
+        system: "If the timer shows '0.000' and doesn't start, please ensure you have clicked the center 'ACTION AREA' to engage the protocol.",
+        options: [
+            { text: "That solved it. Thank you.", next: "INITIAL" },
+            { text: "The issue persists.", next: "BUG_REPORT" }
+        ]
+    },
+    'STRATEGY': {
+        system: "To achieve ELITE status, try counting the seconds in your head and focus on the final milliseconds displayed. It requires intense focus.",
+        options: [
+            { text: "I'll try that.", next: "INITIAL" }
+        ]
+    },
+    'BUG_REPORT': {
+        system: "I am sorry to hear that. The system will log a critical error report. Please refresh the page if the timer continues to malfunction.",
+        options: [
+            { text: "Understood.", next: "INITIAL" }
+        ]
+    },
+    'CLOSE': {
+        system: "Closing support menu. Good luck with the protocol.",
+        next: "INITIAL",
+        action: () => toggleExclusivePanel(chatPanel) // Use the new function to close
+    }
+};
+
+function displayMessage(text, isUser = false) {
+    const msg = document.createElement('div');
+    msg.classList.add('chat-message', isUser ? 'chat-user' : 'chat-system');
+    msg.textContent = text;
+    chatMessages.appendChild(msg);
+    // Scroll to bottom
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function displayOptions(key) {
+    const responseData = responseDatabase[key];
     
-    <div id="game-box">
+    // Clear old options
+    chatMenuArea.innerHTML = '';
+    
+    // Display system message if available
+    if (responseData.system) {
+        displayMessage(responseData.system);
+    }
+
+    // Display new options
+    if (responseData.options) {
+        responseData.options.forEach(option => {
+            const btn = document.createElement('button');
+            btn.classList.add('chat-option-btn');
+            btn.textContent = option.text;
+            btn.onclick = () => handleChatOption(option.text, option.next);
+            chatMenuArea.appendChild(btn);
+        });
+    }
+}
+
+function handleChatOption(userText, nextKey) {
+    // 1. Display user message
+    displayMessage(userText, true);
+
+    // 2. Perform action/display next response
+    if (nextKey === 'CLOSE' && responseDatabase['CLOSE'].action) {
+        displayMessage(responseDatabase['CLOSE'].system);
+        // Wait for system message to display before closing
+        setTimeout(() => {
+            responseDatabase['CLOSE'].action();
+        }, 500);
         
-        <h2>🎯 Precision Stop Protocol</h2>
-        
-        <div id="aesthetic-subtitle">HIT THE MARK. MASTER THE MILLISECOND.</div>
-
-        <div class="time-display-box">
-            <div class="time-label">TARGET TIME</div>
-            <div id="target-time-display" class="digit-display">X.XXX</div>
-        </div>
-
-        <div id="current-timer-display" class="digit-display">0.000</div>
-
-        <div id="action-area" class="state-ready" onclick="precisionStop.handleAction()">
-            <span id="action-text">CLICK TO START</span>
-            <div id="result-message">Set the clock! Aim for the target time above.</div>
-        </div>
-
-        <div id="developer-credit">Developed by Aarav Sinha</div>
-        
-    </div>
-
-    <div id="footer" style="position: fixed; bottom: 10px; left: 10px; font-size: 12px; color: rgba(0, 229, 255, 0.5); text-shadow: 0 0 5px rgba(0, 229, 255, 0.5); z-index: 5;">
-        Protocol System 3.2
-    </div>
-
-    <script>
-        // --- GAME STATE CONSTANTS & DOM ELEMENTS ---
-        const STATE_READY = 'READY';
-        const STATE_RUNNING = 'RUNNING';
-        const STATE_RESULT = 'RESULT';
-        const targetTimeDisplay = document.getElementById('target-time-display');
-        const currentTimerDisplay = document.getElementById('current-timer-display');
-        const actionArea = document.getElementById('action-area');
-        const actionText = document.getElementById('action-text');
-        const resultMessage = document.getElementById('result-message');
-        const body = document.body;
-        const instructionsPanel = document.getElementById('instructions');
-        const settingsModal = document.getElementById('settingsModal');
-        const chatPanel = document.getElementById('chatPanel');
-        const chatMessages = document.getElementById('chat-messages');
-        const chatMenuArea = document.getElementById('chat-menu-area');
-        const themeToggleBtn = document.getElementById('themeToggleBtn');
-        const soundToggleBtn = document.getElementById('soundToggleBtn');
-        let state = STATE_READY;
-        let targetTimeMs = 0;
-        let rafHandle; 
-        let startTime = 0;
-        let elapsedMs = 0;
-        let isSoundEnabled = true; 
-        let audioCtx; 
-        
-        // Array of all panels for closing functionality
-        const allPanels = [instructionsPanel, settingsModal, chatPanel];
-
-        // --- CHAT RESPONSE DATABASE (Multiple Choice Answers) ---
-        const responseDatabase = {
-            INITIAL: {
-                message: "Welcome to the Support Menu. I can provide instant information on the following topics:",
-                options: [
-                    { text: "1. How is my score calculated?", value: "SCORING" },
-                    { text: "2. How does the timer work?", value: "MECHANICS" },
-                    { text: "3. Where are the settings?", value: "SETTINGS_LOC" },
-                    { text: "4. Who developed this system?", value: "ABOUT" }
-                ]
-            },
-            SCORING: {
-                message: "Accuracy is measured by the absolute difference in milliseconds (ms) between your stop time and the Target Time. Elite status is achieved for a difference of $\\le 50$ ms.",
-                next: 'MAIN_MENU'
-            },
-            MECHANICS: {
-                message: "The timer runs using the browser's high-precision 'requestAnimationFrame' loop, ensuring the highest possible accuracy and low latency for the stop function.",
-                next: 'MAIN_MENU'
-            },
-            SETTINGS_LOC: {
-                message: "System settings (Theme, Sound) are accessed via the **SETTINGS** button (⚙️) located at the bottom-right of the screen.",
-                next: 'MAIN_MENU'
-            },
-            ABOUT: {
-                message: "This 'Quantum Grid Protocol' system was developed by Aarav Sinha as a high-precision human reaction challenge.",
-                next: 'MAIN_MENU'
-            },
-            MAIN_MENU: {
-                message: "Ready for your next question. Please choose from the list:",
-                options: [{ text: "Back to Main Menu", value: "INITIAL" }]
-            }
-        };
-
-        // --- AUDIO FUNCTIONS ---
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
-        const TONE_FREQS = { 'START': 523.2, 'GREAT': 1318.5, 'GOOD': 987.8, 'OK': 659.3, 'BAD': 110.0, };
-
-        function ensureAudioContext() {
-            if (audioCtx) return;
-            try {
-                audioCtx = new AudioContext();
-            } catch (e) {
-                console.warn("AudioContext not supported or failed to initialize:", e);
-                isSoundEnabled = false; 
-                soundToggleBtn.innerText = '🔇 OFF';
-                soundToggleBtn.style.background = 'var(--color-error)';
-            }
-        }
-        function generateTone(frequency, duration_ms = 100, waveType = 'sine', decay = 0.05) {
-            if (!isSoundEnabled || !audioCtx) return;
-            
-            const oscillator = audioCtx.createOscillator();
-            const gainNode = audioCtx.createGain();
-            oscillator.type = waveType;
-            oscillator.frequency.setValueAtTime(frequency, audioCtx.currentTime);
-            oscillator.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
-            const now = audioCtx.currentTime;
-            const duration_s = duration_ms / 1000;
-            gainNode.gain.setValueAtTime(0.5, now);
-            gainNode.gain.exponentialRampToValueAtTime(0.001, now + duration_s + decay);
-            oscillator.start();
-            oscillator.stop(now + duration_s + decay);
-        }
-
-        // --- TIME FORMATTING & DISPLAY ---
-        function formatTime(ms) {
-            const totalSeconds = ms / 1000;
-            const seconds = Math.floor(totalSeconds).toString();
-            const milliseconds = Math.floor((totalSeconds - seconds) * 1000).toString().padStart(3, '0');
-            return `${seconds}.${milliseconds}`;
-        }
-
-        function updateDisplay() {
-            elapsedMs = Date.now() - startTime;
-            currentTimerDisplay.innerText = formatTime(elapsedMs);
-            if (state === STATE_RUNNING) {
-                rafHandle = requestAnimationFrame(updateDisplay);
-            }
-        }
-
-        // --- CORE GAME LOGIC ---
-        const precisionStop = {
-            generateTarget() { targetTimeMs = Math.floor(Math.random() * 5000) + 3000; targetTimeDisplay.innerText = formatTime(targetTimeMs); },
-            handleAction() {
-                ensureAudioContext();
-                if (state === STATE_READY) { this.startGame(); } 
-                else if (state === STATE_RUNNING) { this.stopGame(); } 
-                else if (state === STATE_RESULT) { this.resetGame(); }
-            },
-            startGame() {
-                // Close panels before starting game
-                allPanels.forEach(p => p.classList.remove('visible'));
-                this.generateTarget(); startTime = Date.now(); state = STATE_RUNNING;
-                
-                actionArea.classList.remove('state-ready', 'state-great', 'state-good', 'state-ok', 'state-bad');
-                actionArea.classList.add('state-running'); actionText.innerText = "CLICK TO STOP"; resultMessage.innerText = "RUNNING... FOCUS!";
-                rafHandle = requestAnimationFrame(updateDisplay);
-                generateTone(TONE_FREQS['START'], 80, 'triangle');
-            },
-            stopGame() {
-                cancelAnimationFrame(rafHandle); state = STATE_RESULT;
-                const stoppedTime = elapsedMs; const difference = Math.abs(stoppedTime - targetTimeMs);
-                this.showResult(stoppedTime, difference);
-            },
-            showResult(stoppedTime, difference) {
-                const absDiff = Math.round(difference); actionArea.classList.remove('state-running');
-                let tier, tierName, soundFreq, soundType, tierColor;
-                
-                if (absDiff <= 50) { tier = 'great'; tierName = 'ELITE ACCURACY'; soundFreq = TONE_FREQS['GREAT']; soundType = 'sine'; tierColor = 'var(--tier-great)'; } 
-                else if (absDiff <= 200) { tier = 'good'; tierName = 'SUCCESS'; soundFreq = TONE_FREQS['GOOD']; soundType = 'triangle'; tierColor = 'var(--tier-good)'; } 
-                else if (absDiff <= 500) { tier = 'ok'; tierName = 'ACCEPTABLE'; soundFreq = TONE_FREQS['OK']; soundType = 'square'; tierColor = 'var(--tier-ok)'; } 
-                else { tier = 'bad'; tierName = 'FAILURE'; soundFreq = TONE_FREQS['BAD']; soundType = 'square'; tierColor = 'var(--tier-bad)'; }
-
-                resultMessage.innerHTML = `<span class="tier-text">${tierName}. ${absDiff} MS DIFFERENCE.</span> TARGET WAS ${formatTime(targetTimeMs)}.`;
-                actionArea.classList.add(`state-${tier}`); actionText.innerText = `RETRY? Difference: ${absDiff} ms`;
-                generateTone(soundFreq, 150, soundType, 0.2);
-            },
-            resetGame() {
-                state = STATE_READY;
-                actionArea.classList.remove('state-great', 'state-good', 'state-ok', 'state-bad'); actionArea.classList.add('state-ready');
-                actionText.innerText = "CLICK TO START"; currentTimerDisplay.innerText = "0.000"; targetTimeDisplay.innerText = "X.XXX";
-                resultMessage.innerText = "Set the clock! Aim for the target time above.";
-            }
-        };
-
-        // --- UI & MODAL FUNCTIONS ---
-
-        function togglePanel(panelToToggle) {
-            allPanels.forEach(p => {
-                if (p !== panelToToggle) {
-                    p.classList.remove('visible');
-                }
-            });
-            panelToToggle.classList.toggle('visible');
-        }
-
-        function toggleSettingsModal() {
-            togglePanel(settingsModal);
-        }
-
-        function toggleChatPanel() {
-            const isVisible = chatPanel.classList.contains('visible');
-            togglePanel(chatPanel);
-
-            if (!isVisible) {
+        // Reset state for next open
+        if (nextKey === 'INITIAL') {
+            setTimeout(() => {
                 chatMessages.innerHTML = ''; 
                 displayOptions('INITIAL');
-            }
-        }
-        
-        function toggleTheme() {
-            body.classList.toggle('light-mode');
-            const isLight = body.classList.contains('light-mode');
-            themeToggleBtn.innerText = isLight ? '🌙 Dark' : '☀️ Light';
-            themeToggleBtn.style.background = isLight ? 'var(--color-primary)' : 'var(--color-secondary)';
-            themeToggleBtn.style.color = isLight ? 'white' : 'black';
-        }
-        
-        function toggleSound() {
-            ensureAudioContext(); 
-            isSoundEnabled = !isSoundEnabled;
-            soundToggleBtn.innerText = isSoundEnabled ? '🔊 ON' : '🔇 OFF';
-            soundToggleBtn.style.background = isSoundEnabled ? 'var(--color-secondary)' : 'var(--color-error)';
-        }
-
-        // --- CHAT LOGIC ---
-
-        function addMessageToChat(text, type) {
-            const msgElement = document.createElement('div');
-            msgElement.className = `chat-message chat-${type}`;
-            msgElement.innerHTML = text;
-            chatMessages.appendChild(msgElement);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
-
-        function displayOptions(key) {
-            const data = responseDatabase[key];
-            chatMenuArea.innerHTML = ''; 
-            
-            if (data.message) {
-                 addMessageToChat(data.message, 'system');
-            }
-            
-            if (data.options) {
-                data.options.forEach(option => {
-                    const button = document.createElement('button');
-                    button.className = 'chat-option-btn';
-                    button.textContent = option.text;
-                    button.onclick = () => handleOptionClick(option.text, option.value);
-                    chatMenuArea.appendChild(button);
-                });
-            }
-        }
-
-        function handleOptionClick(userText, nextKey) {
-            addMessageToChat(userText, 'user');
-            
-            if (nextKey === 'INITIAL') {
-                setTimeout(() => {
-                    chatMessages.innerHTML = ''; 
-                    displayOptions('INITIAL');
-                }, 300);
-                return;
-            }
-
-            const responseData = responseDatabase[nextKey];
-            
-            setTimeout(() => {
-                displayOptions(nextKey);
-                
-                if (responseData.next) {
-                    if (responseData.next !== nextKey) {
-                        displayOptions(responseData.next);
-                    }
-                }
             }, 300);
+            return;
         }
-
-        // --- INITIALIZATION ---
+    }
+    
+    const responseData = responseDatabase[nextKey];
+    
+    setTimeout(() => {
+        displayOptions(nextKey);
         
-        window.precisionStop = precisionStop;
-        window.toggleTheme = toggleTheme;
-        window.toggleSound = toggleSound;
-        window.togglePanel = togglePanel;
-        window.toggleSettingsModal = toggleSettingsModal;
-        window.toggleChatPanel = toggleChatPanel;
-        window.handleOptionClick = handleOptionClick;
+        if (responseData.next) {
+            // Not needed for current structure.
+        }
+    }, 500);
+}
 
-        // Set initial button states
-        themeToggleBtn.innerText = body.classList.contains('light-mode') ? '🌙 Dark' : '☀️ Light';
-        themeToggleBtn.style.background = body.classList.contains('light-mode') ? 'var(--color-primary)' : 'var(--color-secondary)';
-        soundToggleBtn.innerText = isSoundEnabled ? '🔊 ON' : '🔇 OFF';
-        soundToggleBtn.style.background = isSoundEnabled ? 'var(--color-secondary)' : 'var(--color-error)';
-    </script>
+function initializeChat() {
+    // Clear chat history on load/initialization
+    chatMessages.innerHTML = ''; 
+    // Start with the initial options
+    displayOptions('INITIAL');
+}
+
+// --- INITIALIZATION ---
+window.onload = function() {
+    // 1. Generate the initial target time
+    generateTargetTime();
+    
+    // 2. Initial state setup for action button
+    actionArea.classList.add('state-ready');
+    
+    // 3. Initial chat setup
+    // Chat initialization will now happen when the chat button is pressed via toggleExclusivePanel
+    
+    // 4. Set initial theme toggle text
+    if (body.classList.contains('light-mode')) {
+        themeToggleBtn.textContent = ' ☀️  Toggle';
+    } else {
+        themeToggleBtn.textContent = ' 🌙  Toggle';
+    }
+}
+</script>
 </body>
 </html>
