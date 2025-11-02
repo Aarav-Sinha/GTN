@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Arcade OS: Protocol Selector</title>
-    <!-- Importing Montserrat for clean text and Share Tech Mono for the tech aesthetic -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
         /* --- Root Variables for Cyber Theme (Red/Cyan) --- */
@@ -37,14 +36,13 @@
             overflow-x: hidden;
             
             /* AESTHETIC GRADIENT BACKGROUND IMPLEMENTED */
-            /* Deep Black/Red/Cyan Diagonal Gradient */
             background: linear-gradient(135deg, 
-                #000000 0%,         /* Deep Black start */
-                #220000 30%,         /* Dark Red transition */
-                #11001A 70%,         /* Very Dark Purple/Blue transition */
-                #000000 100%         /* Deep Black end */
+                #000000 0%, 
+                #220000 30%, 
+                #11001A 70%, 
+                #000000 100% 
             );
-            background-attachment: fixed; /* Ensures the gradient stays put */
+            background-attachment: fixed;
         }
 
         /* --- Main Title and Header --- */
@@ -73,6 +71,18 @@
             font-weight: 500;
             text-transform: uppercase;
         }
+        
+        /* --- Styling for the new greeting element --- */
+        .system-header .welcome-message {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: clamp(16px, 3vw, 24px);
+            color: var(--color-primary); 
+            margin-bottom: 5px;
+            letter-spacing: 3px;
+            text-shadow: 0 0 8px rgba(255, 51, 51, 0.5);
+            font-weight: 700;
+        }
+
 
         /* --- Game Grid Layout --- */
         #game-grid {
@@ -177,8 +187,24 @@
             color: rgba(0, 188, 212, 0.5);
             background: rgba(0, 0, 0, 0.4);
             border-top: 1px solid rgba(0, 188, 212, 0.2);
+            display: flex; /* Flex for alignment */
+            justify-content: center;
+            align-items: center;
+            gap: 20px; /* Space between elements */
         }
         
+        .system-footer a {
+            color: var(--color-primary); /* Red link for logout */
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+            text-transform: uppercase;
+            font-size: 14px;
+        }
+        .system-footer a:hover {
+            color: var(--color-secondary); /* Cyan hover */
+        }
+
         /* Responsive Adjustments for smaller screens */
         @media (max-width: 768px) {
             #game-grid {
@@ -188,19 +214,23 @@
             .protocol-card {
                 padding: 25px;
             }
+            .system-footer {
+                flex-direction: column;
+                gap: 5px;
+            }
         }
     </style>
 </head>
 <body>
 
     <div class="system-header">
+        <p id="user-greeting" class="welcome-message"></p>
         <h1>ARCADE OS V2.1</h1>
         <p>SELECT DECRYPTION PROTOCOL</p>
     </div>
 
     <div id="game-grid">
         
-        <!-- 1. Colour Sequence Protocol (Memory/Pattern Recognition) -->
         <a href="ColourSeq.html" class="protocol-card card-1">
             <span class="icon">MEM</span>
             <h2>MEMORY SEQUENCE PROTOCOL</h2>
@@ -209,7 +239,6 @@
             </div>
         </a>
 
-        <!-- 2. Guess Master Protocol (Deduction/Logic) -->
         <a href="GuessNum.html" class="protocol-card card-2">
             <span class="icon">DED</span>
             <h2>GUESS MASTER PROTOCOL</h2>
@@ -218,7 +247,6 @@
             </div>
         </a>
 
-        <!-- 3. Time Warp Protocol (Precision) -->
         <a href="Precision.html" class="protocol-card card-3">
             <span class="icon">PRC</span>
             <h2>TIME WARP PROTOCOL</h2>
@@ -227,7 +255,6 @@
             </div>
         </a>
 
-        <!-- 4. Instantaneous Reflex Protocol (Reaction) -->
         <a href="ReactionTest.html" class="protocol-card card-4">
             <span class="icon">RFL</span>
             <h2>INSTANTANEOUS REFLEX PROTOCOL</h2>
@@ -239,8 +266,95 @@
     </div>
     
     <div class="system-footer">
-        PROTOCOL STATUS: ONLINE | DEVELOPED BY AARAV SINHA
+        <span>PROTOCOL STATUS: ONLINE | DEVELOPED BY AARAV SINHA</span>
+        <a href="#" id="logout-link">TERMINATE SESSION (LOGOUT)</a>
     </div>
 
+    <script>
+        const AUTH_PAGE_FILE = 'auth.html';
+        const GREETING_ELEMENT = document.getElementById('user-greeting');
+        const LOGOUT_LINK = document.getElementById('logout-link');
+        
+        // --- Message Pool for Random Glitch ---
+        const GLITCH_MESSAGES = [
+            "// DATA CORRUPTION DETECTED. RECALCULATING... //",
+            "// AURA SIGNAL INTERCEPTED. TRACE FAILED. //",
+            "// ERROR 404: OBJECTIVE NOT FOUND //",
+            "// [SYSTEM MESSAGE] DO NOT TRUST THE CLOCK //",
+            "// MEMORY LEAK: ACCESS GRANTED TO UNKNOWN ENTITY //",
+            "// SCANNING COMPLETE. NO THREATS IDENTIFIED. //"
+        ];
+
+        let originalGreeting = ''; // Variable to store the correct, personalized message
+
+        // --- Function to generate the correct, personalized greeting ---
+        function generateGreeting() {
+            const loggedInUsername = localStorage.getItem('currentUser');
+            if (loggedInUsername) {
+                const formattedUsername = loggedInUsername.charAt(0).toUpperCase() + loggedInUsername.slice(1);
+                // The Mission-Oriented message
+                originalGreeting = `// WELCOME BACK, ${formattedUsername}. SELECT YOUR MISSION //`;
+            } else {
+                originalGreeting = `// WELCOME OPERATOR. AUTH REQUIRED FOR FULL ACCESS //`;
+            }
+            GREETING_ELEMENT.textContent = originalGreeting;
+        }
+
+        // --- 🛑 SECURITY GUARD CLAUSE (Crucial) 🛑 ---
+        if (localStorage.getItem('isAuthenticated') !== 'true') {
+            localStorage.removeItem('isAuthenticated');
+            localStorage.removeItem('currentUser');
+            window.location.href = AUTH_PAGE_FILE;
+        }
+
+        // Initialize the correct greeting when the page loads
+        generateGreeting();
+
+        // --- Logout Handler ---
+        LOGOUT_LINK.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (confirm("Are you sure you want to terminate the session and log out?")) {
+                localStorage.removeItem('isAuthenticated');
+                localStorage.removeItem('currentUser');
+                window.location.href = AUTH_PAGE_FILE;
+            }
+        });
+
+        // --- RANDOM GLITCH/MESSAGE GENERATOR ---
+        function triggerRandomGlitch() {
+            // Only run the glitch logic if the element is currently showing the correct greeting
+            if (GREETING_ELEMENT.textContent !== originalGreeting) {
+                return; 
+            }
+
+            // 20% chance (1 in 5) to show a glitch every time the timer runs (every 7 seconds)
+            const probability = 0.20; 
+
+            if (Math.random() < probability) {
+                // 1. Pick a random message
+                const randomIndex = Math.floor(Math.random() * GLITCH_MESSAGES.length);
+                const randomMessage = GLITCH_MESSAGES[randomIndex];
+
+                // 2. Display the glitch message
+                GREETING_ELEMENT.textContent = randomMessage;
+                
+                // Optional: Temporarily change the color to emphasize the interruption
+                GREETING_ELEMENT.style.color = '#FFFF00'; // Yellow for warning
+                GREETING_ELEMENT.style.textShadow = '0 0 10px #FFFF00';
+
+                // 3. Set a timeout to restore the original greeting after a short pause (e.g., 2 seconds)
+                setTimeout(() => {
+                    GREETING_ELEMENT.textContent = originalGreeting;
+                    
+                    // Restore original styling (by setting them to empty string, they revert to CSS rules)
+                    GREETING_ELEMENT.style.color = ''; 
+                    GREETING_ELEMENT.style.textShadow = ''; 
+                }, 2000); // Glitch lasts for 2 seconds
+            }
+        }
+
+        // Start the interval timer: check for a glitch every 7 seconds
+        setInterval(triggerRandomGlitch, 7000);
+    </script>
 </body>
 </html>

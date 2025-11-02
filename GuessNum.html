@@ -10,9 +10,11 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 
     <style>
-        /* --- CSS Variables & Global Resets --- */
+        /* --- CSS Variables & Global Resets (Dark Mode Only) --- */
         :root {
+            /* DARK MODE DEFAULTS */
             --color-bg-void: #02001a;       /* Deepest Indigo/Void */
+            --color-bg-main: #02001a;
             --color-primary-pink: #ff1aff;  /* Vibrant Magenta/Pink */
             --color-secondary-blue: #00e5ff; /* Bright Cyan/Blue */
             --color-text-dim: rgba(255, 255, 255, 0.75);
@@ -21,6 +23,8 @@
             --color-border-subtle: rgba(255, 255, 255, 0.1);
             --font-display: 'Rajdhani', sans-serif;
             --font-main: 'Jura', sans-serif;
+            --chat-text-user: #ff1aff;
+            --chat-text-ai: #00e5ff;
         }
 
         /* --- KEYFRAMES: Evolving Organic Shape (The Advanced Motion) --- */
@@ -95,6 +99,7 @@
             position: relative;
             border: 1px solid var(--color-border-subtle);
             transition: all 0.3s;
+            z-index: 1; /* Keep frames above connectors */
         }
         .ui-frame:hover {
             box-shadow: 0 0 25px rgba(255, 255, 255, 0.2);
@@ -142,8 +147,17 @@
             color: var(--color-text-main); 
             font-size: 1.1em;
         }
-        .header-bar i { margin-left: 15px; cursor: pointer; color: var(--color-secondary-blue); transition: color 0.2s; }
+        .header-bar i { 
+            margin-left: 15px; 
+            cursor: pointer; 
+            color: var(--color-secondary-blue); 
+            transition: color 0.2s; 
+        }
         .header-bar i:hover { color: var(--color-primary-pink); }
+        /* Style for the new chat icon */
+        #chat-icon {
+            color: var(--color-primary-pink); /* Distinct color for chat */
+        }
         
         /* --- 2. INPUT PANEL (Left) --- */
         .input-control {
@@ -278,7 +292,7 @@
         #history-list::-webkit-scrollbar-track { background: var(--color-bg-void); }
 
         /* --- INPUT & BUTTONS (Minimalist Glow) --- */
-        input:not([type="checkbox"]) {
+        input:not([type="checkbox"], [type="text"]) { /* Exclude chat input from this rule */
             padding: 10px 15px;
             border: 1px solid var(--color-secondary-blue);
             background-color: rgba(0, 0, 0, 0.3);
@@ -289,6 +303,19 @@
             font-size: 1.1em;
             border-radius: 6px;
             box-shadow: 0 0 5px rgba(0, 229, 255, 0.5);
+            margin-bottom: 10px;
+        }
+        input[type="text"] { /* Style for chat input field */
+            padding: 8px 10px;
+            border: 1px solid var(--color-primary-pink);
+            background-color: rgba(0, 0, 0, 0.4);
+            color: var(--color-text-main);
+            width: 100%;
+            box-sizing: border-box;
+            font-family: var(--font-main);
+            font-size: 0.9em;
+            border-radius: 4px;
+            margin-bottom: 10px;
         }
         input:focus {
             outline: none;
@@ -310,12 +337,19 @@
             box-shadow: 0 5px 15px rgba(255, 26, 255, 0.4);
             transition: all 0.3s;
         }
-
         .action-button:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(0, 229, 255, 0.6);
         }
         
+        /* Separate chat send button style */
+        #send-chat-btn {
+            background: var(--color-secondary-blue);
+            color: var(--color-bg-void);
+            padding: 8px 12px;
+            margin-top: 0;
+        }
+
         /* --- UTILITY & STATUS HIGHLIGHTS --- */
         .hidden { display: none !important; }
         .text-success { color: var(--color-secondary-blue); text-shadow: 0 0 8px var(--color-secondary-blue); }
@@ -334,7 +368,8 @@
         .info-panel {
             position: absolute;
             top: 100px;
-            right: 20px;
+            /* Positions the popups relative to the right edge */
+            right: 20px; 
             width: 300px;
             z-index: 10;
             opacity: 0;
@@ -347,6 +382,11 @@
             visibility: visible;
             transform: translateY(0);
         }
+        
+        /* Specific positioning for Protocol and Chat popups */
+        #protocol-popup { right: 100px; }
+        #chat-panel { right: 180px; } /* Positioned left of protocol/settings */
+        
         .info-panel h4 {
             color: var(--color-primary-pink);
             margin: 0 0 10px;
@@ -365,6 +405,33 @@
             margin-top: 10px;
         }
 
+        /* --- CHAT LOG STYLES --- */
+        #chat-log-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 15px 0;
+            height: 150px; /* Fixed height for scrollable log */
+            overflow-y: auto;
+            border: 1px solid var(--color-border-subtle);
+            padding: 5px;
+            border-radius: 4px;
+            background-color: rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column-reverse; /* New messages at top */
+        }
+        #chat-log-list::-webkit-scrollbar { width: 4px; }
+        #chat-log-list::-webkit-scrollbar-thumb { background: var(--color-secondary-blue); border-radius: 2px; }
+        
+        #chat-log-list li {
+            font-family: monospace;
+            font-size: 0.8em;
+            padding: 3px 0;
+            border-top: 1px dotted rgba(255, 255, 255, 0.05);
+            word-wrap: break-word;
+        }
+        .user-message { color: var(--chat-text-user); }
+        .ai-message { color: var(--chat-text-ai); }
+
     </style>
 </head>
 <body>
@@ -378,6 +445,7 @@
         <div class="header-bar">
             <span class="title-text">GUESS MASTER: AURA CONSOLE</span>
             <div>
+                <i class="fas fa-comment-alt" id="chat-icon" title="Chat Console"></i>
                 <i class="fas fa-book" id="protocol-icon" title="Game Rules"></i>
                 <i class="fas fa-cog" id="settings-icon" title="Settings"></i>
             </div>
@@ -403,6 +471,7 @@
                     GUESSES LEFT: <span id="display-guesses-text" class="text-success">10</span>
                 </p>
                 <button id="submit-guess-btn" class="action-button">SUBMIT GUESS</button>
+                
                 <button id="reset-game-btn" class="action-button reset-button-style hidden">END GAME</button>
             </div>
         </div>
@@ -452,9 +521,20 @@
                 <input type="checkbox" id="sound-mode" checked> SOUND EFFECTS
             </label>
         </div>
+        
+        <div id="chat-panel" class="info-panel ui-frame">
+            <h4><i class="fas fa-comment-alt"></i> COMMUNICATION LOG</h4>
+            <ul id="chat-log-list">
+                <li class="ai-message">[GM-AI] System online. Awaiting commands.</li>
+            </ul>
+            
+            <input type="text" id="chat-message" maxlength="100" placeholder="Type a message (Enter)">
+            <button id="send-chat-btn" class="action-button">SEND CHAT</button>
+        </div>
 
 
     </div> 
+
     
     <script>
         // --- JAVASCRIPT LOGIC ---
@@ -483,8 +563,11 @@
         
         const settingsPopup = document.getElementById('settings-popup');
         const protocolPopup = document.getElementById('protocol-popup'); 
+        const chatPanel = document.getElementById('chat-panel'); // NEW
+        
         const settingsIcon = document.getElementById('settings-icon');
         const protocolIcon = document.getElementById('protocol-icon');   
+        const chatIcon = document.getElementById('chat-icon'); // NEW
         const soundModeCheckbox = document.getElementById('sound-mode');
         const highScoreWrapper = document.getElementById('high-score-wrapper');
         
@@ -492,10 +575,52 @@
         const currentGuessCountSpan = document.getElementById('current-guess-count');
         const guessMeterWrapper = document.getElementById('guess-meter-wrapper');
         const guessMeterFill = document.getElementById('guess-meter-fill');
-
-
-        const allPopups = [settingsPopup, protocolPopup];
+        
+        // CHAT ELEMENTS
+        const chatMessageInput = document.getElementById('chat-message');
+        const sendChatBtn = document.getElementById('send-chat-btn');
+        const chatLogList = document.getElementById('chat-log-list');
+        
+        const allPopups = [settingsPopup, protocolPopup, chatPanel];
         const canvasConfetti = window.confetti;
+
+        // --- Chat Logging Function ---
+        function chatLog(message, isUser = false) {
+            const item = document.createElement('li');
+            item.textContent = isUser ? `[USER] ${message}` : `[GM-AI] ${message}`;
+            item.className = isUser ? 'user-message' : 'ai-message';
+
+            chatLogList.prepend(item);
+            
+            // Limit log size
+            while (chatLogList.children.length > 50) {
+                chatLogList.removeChild(chatLogList.lastChild);
+            }
+        }
+        
+        // --- User Chat Functionality ---
+        function sendUserChat() {
+            const message = chatMessageInput.value.trim();
+            if (message === "") return;
+
+            chatLog(message, true); // Log user message
+            
+            // Simple AI Auto-Response Logic
+            const lowerMsg = message.toLowerCase();
+            if (lowerMsg.includes("target") || lowerMsg.includes("number")) {
+                chatLog("Protocol dictates the target must remain confidential. Please rely on the data.");
+            } else if (lowerMsg.includes("hello") || lowerMsg.includes("hi")) {
+                chatLog("Greetings. I am ready to process your inputs.");
+            } else if (lowerMsg.includes("guess") && isGameActive) {
+                chatLog(`Your current guess limit is ${maxGuesses}. You have ${guessesLeft} attempts remaining.`);
+            } else {
+                chatLog("Input received. No additional protocol response is required.");
+            }
+            
+            chatMessageInput.value = '';
+            chatMessageInput.focus();
+        }
+
 
         // --- Sound Generation (Web Audio API - Tonal Sweeps) ---
         function playSound(type) {
@@ -510,7 +635,6 @@
 
             switch(type) {
                 case 'guess':
-                    // Short sweep like a radar ping
                     oscillator.type = 'sawtooth';
                     oscillator.frequency.setValueAtTime(300, context.currentTime);
                     oscillator.frequency.linearRampToValueAtTime(350, context.currentTime + 0.1);
@@ -520,10 +644,8 @@
                     oscillator.stop(context.currentTime + 0.2);
                     break;
                 case 'win':
-                    // Ascending, resolving chord
                     oscillator.type = 'sine';
                     gainNode.gain.exponentialRampToValueAtTime(0.4, context.currentTime + 0.1);
-                    // C6 to G6
                     oscillator.frequency.setValueAtTime(1046.5, context.currentTime); 
                     oscillator.frequency.linearRampToValueAtTime(1567.98, context.currentTime + 0.5); 
                     gainNode.gain.linearRampToValueAtTime(0.001, context.currentTime + 0.8);
@@ -531,7 +653,6 @@
                     oscillator.stop(context.currentTime + 0.8);
                     break;
                 case 'lose':
-                    // Low, descending dissonant pulse
                     oscillator.type = 'triangle';
                     oscillator.frequency.setValueAtTime(180, context.currentTime); 
                     oscillator.frequency.linearRampToValueAtTime(90, context.currentTime + 0.6); 
@@ -549,7 +670,7 @@
         function selectNewTarget() {
             // Target is a number between 1 and 100
             targetNumber = Math.floor(Math.random() * 100) + 1;
-            console.log("New Target Number: " + targetNumber);
+            chatLog(`New Target Set: ${targetNumber} (DEBUG/AI Confirmation)`);
         }
 
         // --- POPUP LOGIC ---
@@ -573,9 +694,25 @@
             e.stopPropagation();
             togglePopup(settingsPopup);
         });
+        chatIcon.addEventListener('click', (e) => { // NEW CHAT ICON LISTENER
+            e.stopPropagation();
+            togglePopup(chatPanel);
+            if (chatPanel.classList.contains('active')) {
+                chatMessageInput.focus();
+            }
+        });
         document.body.addEventListener('click', (e) => {
+            // Close popups if click is outside any popup and not on a header icon
             if (!e.target.closest('.info-panel') && !e.target.closest('.header-bar i')) {
                 closeAllPopups();
+            }
+        });
+        
+        // Chat Input Event Listeners
+        sendChatBtn.addEventListener('click', sendUserChat);
+        chatMessageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendUserChat();
             }
         });
 
@@ -606,6 +743,8 @@
             hintMessage.className = 'text-warning';
             
             selectNewTarget(); // Set the ONE, fixed target
+            
+            chatLog(`Game started. Guess limit set to ${maxGuesses}.`);
         });
         
         function updateGuessMeter(currentGuesses) {
@@ -613,7 +752,7 @@
             guessMeterFill.style.width = `${percentLeft}%`;
         }
 
-        // --- CORRECTED processGuess FUNCTION ---
+        // --- processGuess FUNCTION ---
         function processGuess(guess) {
             const diff = targetNumber - guess;
             const absDiff = Math.abs(diff);
@@ -626,28 +765,20 @@
                 hintClass = 'text-success';
                 endGame(true);
             } else {
-                // Determine if the target is Higher (diff > 0) or Lower (diff < 0)
                 const isTargetHigher = diff > 0;
 
-                // Apply Proximity Clue (Close or Far)
                 if (absDiff <= 7) { 
-                    // CLOSE (Within 7)
                     if (isTargetHigher) {
-                        // Target > Guess (Target is HIGHER)
                         hint = isInverseMode ? 'Close, but the target is LOWER.' : 'Close, but the target is HIGHER.';
                     } else {
-                        // Target < Guess (Target is LOWER)
                         hint = isInverseMode ? 'Close, but the target is HIGHER.' : 'Close, but the target is LOWER.';
                     }
                     hintClass = 'text-warning';
 
                 } else {
-                    // FAR (Outside 7)
                     if (isTargetHigher) {
-                        // Target > Guess (Target is HIGHER)
                         hint = isInverseMode ? 'Far off! The target is MUCH LOWER.' : 'Far off! The target is MUCH HIGHER.';
                     } else {
-                        // Target < Guess (Target is LOWER)
                         hint = isInverseMode ? 'Far off! The target is MUCH HIGHER.' : 'Far off! The target is MUCH LOWER.';
                     }
                     hintClass = 'text-error';
@@ -678,11 +809,13 @@
             
             playSound('guess'); 
             
+            const currentGuessNum = maxGuesses - guessesLeft + 1;
+            
             // Update center display
-            mainTitle.textContent = `GUESS #${maxGuesses - guessesLeft + 1}`;
+            mainTitle.textContent = `GUESS #${currentGuessNum}`;
             currentGuessCountSpan.classList.remove('hidden');
             currentGuessCountSpan.textContent = userGuess;
-
+            
             processGuess(userGuess);
             
             userGuessInput.value = '';
@@ -692,8 +825,14 @@
             updateGuessMeter(guessesLeft); 
 
             if (guessesLeft === 0 && !hintMessage.textContent.includes('WIN')) {
-                // The algorithm fix is here: we DO NOT call selectNewTarget()
                 endGame(false);
+            }
+        });
+        
+        // Allow user to submit guess with Enter key from the guess input
+        userGuessInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                submitGuessBtn.click();
             }
         });
 
@@ -719,6 +858,7 @@
             if (isWin) {
                 playSound('win');
                 const attemptsTaken = maxGuesses - guessesLeft + 1; 
+                chatLog(`VICTORY achieved in ${attemptsTaken} attempts.`);
                 if (currentHighScore === 'N/A' || attemptsTaken < parseInt(currentHighScore)) {
                     launchConfetti();
                     alert(`NEW BEST SCORE! You found the number in ${attemptsTaken} guesses!`); 
@@ -729,6 +869,7 @@
                 mainTitle.textContent = 'VICTORY';
             } else {
                 playSound('lose');
+                chatLog(`DEFEAT. Target was ${targetNumber}.`);
                 hintMessage.textContent = `GAME OVER. The target was ${targetNumber}.`;
                 hintMessage.className = 'text-error';
                 mainTitle.textContent = 'DEFEAT';
@@ -753,6 +894,8 @@
             hintMessage.textContent = 'Ready to Begin...';
             userGuessInput.value = '';
             hintMessage.className = 'text-warning';
+            
+            chatLog("Console Reset. Ready for new game sequence.");
         });
         
     </script>

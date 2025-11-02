@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Authentication Console</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Jura:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    
+    <style>
+        /* --- CSS Variables (Consistent with Game Page) --- */
+        :root {
+            --color-bg-void: #02001a;
+            --color-primary-pink: #ff1aff;
+            --color-secondary-blue: #00e5ff;
+            --color-text-main: #fff;
+            --color-panel-bg: rgba(255, 255, 255, 0.05);
+            --color-border-subtle: rgba(255, 255, 255, 0.1);
+            --font-display: 'Rajdhani', sans-serif;
+            --font-main: 'Jura', sans-serif;
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            background-color: var(--color-bg-void);
+            font-family: var(--font-main);
+            color: var(--color-text-main);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .organic-bg {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 150vw;
+            height: 150vh;
+            background: 
+                radial-gradient(circle at 30% 70%, var(--color-secondary-blue) 0%, transparent 40%),
+                radial-gradient(circle at 70% 30%, var(--color-primary-pink) 0%, transparent 40%);
+            opacity: 0.6;
+            filter: blur(80px); 
+            animation: shape-evolve 40s infinite alternate ease-in-out;
+            pointer-events: none;
+            z-index: -1;
+        }
+        @keyframes shape-evolve {
+            0% { transform: scale(1) rotate(0deg); opacity: 0.5; }
+            50% { transform: scale(1.1) rotate(5deg); opacity: 0.7; }
+            100% { transform: scale(1) rotate(0deg); opacity: 0.5; }
+        }
+
+        .auth-container {
+            width: 90%;
+            max-width: 400px;
+            background-color: var(--color-panel-bg);
+            border-radius: 12px;
+            padding: 40px 30px;
+            box-shadow: 0 0 20px rgba(0, 229, 255, 0.3);
+            border: 1px solid var(--color-secondary-blue);
+        }
+
+        h1 {
+            font-family: var(--font-display);
+            color: var(--color-primary-pink);
+            text-shadow: 0 0 10px var(--color-primary-pink);
+            font-size: 2.5em;
+            margin-bottom: 25px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            margin: 10px 0;
+            border: 1px solid var(--color-secondary-blue);
+            background-color: rgba(0, 0, 0, 0.3);
+            color: var(--color-text-main);
+            box-sizing: border-box;
+            font-family: var(--font-main);
+            font-size: 1em;
+            border-radius: 6px;
+        }
+        input:focus {
+            outline: none;
+            border-color: var(--color-primary-pink);
+            box-shadow: 0 0 12px var(--color-primary-pink);
+        }
+
+        .action-button {
+            width: 100%;
+            padding: 12px;
+            cursor: pointer;
+            background: linear-gradient(90deg, var(--color-primary-pink), var(--color-secondary-blue));
+            color: var(--color-bg-void);
+            border: none;
+            font-weight: 700;
+            font-family: var(--font-display);
+            margin-top: 20px;
+            text-transform: uppercase;
+            border-radius: 6px;
+            box-shadow: 0 5px 15px rgba(255, 26, 255, 0.4);
+            transition: all 0.3s;
+        }
+        .action-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 229, 255, 0.6);
+        }
+
+        .message-area {
+            min-height: 20px;
+            margin-top: 15px;
+            font-size: 0.9em;
+        }
+        .message-success { color: var(--color-secondary-blue); }
+        .message-error { color: #ff3333; }
+        .message-info { color: var(--color-primary-pink); }
+        
+        .switch-link {
+            display: block;
+            margin-top: 15px;
+            color: var(--color-text-main);
+            font-size: 0.9em;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+        .switch-link:hover {
+            opacity: 1;
+            color: var(--color-primary-pink);
+        }
+
+        .hidden { display: none !important; }
+
+        /* --- Social Login Styles --- */
+        .social-divider {
+            margin: 25px 0 15px 0;
+            display: flex;
+            align-items: center;
+            font-size: 0.8em;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+        }
+        .social-divider::before,
+        .social-divider::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.2);
+            margin: 0 10px;
+        }
+        
+        /* Google Button Style */
+        .google-button-firebase {
+            width: 100%;
+            padding: 12px;
+            cursor: pointer;
+            background: var(--color-panel-bg); 
+            border: 1px solid var(--color-secondary-blue);
+            color: var(--color-text-main);
+            font-weight: 600;
+            font-family: var(--font-main);
+            border-radius: 6px;
+            box-shadow: 0 0 10px rgba(0, 229, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .google-button-firebase:hover {
+            background-color: rgba(0, 229, 255, 0.1);
+            box-shadow: 0 0 15px var(--color-secondary-blue);
+        }
+        .google-button-firebase i {
+            margin-right: 10px;
+            font-size: 1.2em;
+            color: #4285F4; /* Standard Google Blue for the icon */
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="organic-bg"></div>
+
+    <div class="auth-container">
+        <h1 id="auth-title">USER LOGIN</h1>
+        
+        <div id="login-section">
+            <form id="login-form">
+                <input type="email" id="login-email" placeholder="Email" required> 
+                <input type="password" id="login-password" placeholder="Password" required>
+                
+                <div id="login-message" class="message-area message-error"></div>
+
+                <button type="submit" class="action-button">LOGIN</button>
+            </form>
+
+            <div class="social-divider">OR</div>
+            
+            <button id="google-login-btn" class="google-button-firebase">
+                <i class="fab fa-google"></i> SIGN IN WITH GOOGLE
+            </button>
+
+            <span class="switch-link" onclick="showSection('register')">Need access? Register here.</span>
+        </div>
+
+        <div id="register-section" class="hidden">
+            <form id="register-form">
+                <input type="email" id="reg-email" placeholder="Email" required>
+                <input type="password" id="reg-password" placeholder="New Password" required>
+                
+                <div id="register-message" class="message-area message-info"></div>
+
+                <button type="submit" class="action-button">REGISTER</button>
+            </form>
+            <span class="switch-link" onclick="showSection('login')">Already registered? Login here.</span>
+        </div>
+
+    </div>
+
+    <script>
+        const GAME_PAGE_FILE = 'index.html';
+        const STORAGE_KEY_AUTH = 'isAuthenticated';
+
+        const authTitle = document.getElementById('auth-title');
+        const loginSection = document.getElementById('login-section');
+        const registerSection = document.getElementById('register-section');
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        const loginMessage = document.getElementById('login-message');
+        const registerMessage = document.getElementById('register-message');
+        const googleLoginBtn = document.getElementById('google-login-btn');
+
+
+        // 🛑 1. PASTE YOUR FIREBASE CONFIGURATION HERE 🛑
+        // -------------------------------------------------------------------
+        // FIND THIS BLOCK IN YOUR FIREBASE CONSOLE PROJECT SETTINGS (Web App)
+        // -------------------------------------------------------------------
+        const firebaseConfig = {
+  apiKey: "AIzaSyBTTZUCwGbgGL6ZZ-iniIDreJiL3ZL2_gU",
+  authDomain: "arcade-f9871.firebaseapp.com",
+  projectId: "arcade-f9871",
+  storageBucket: "arcade-f9871.firebasestorage.app",
+  messagingSenderId: "802203870013",
+  appId: "1:802203870013:web:1ca84a3a024c83e41e5b54",
+  measurementId: "G-M17Z7L36Q0"
+};
+        
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const googleProvider = new firebase.auth.GoogleAuthProvider();
+
+
+        // --- Utility: Redirect on success ---
+        function handleSuccessfulLogin(user) {
+            // Use the display name from the user object, falling back to email if name is missing
+            const username = user.displayName || user.email.split('@')[0];
+            
+            // Set session flags in localStorage
+            localStorage.setItem(STORAGE_KEY_AUTH, 'true');
+            localStorage.setItem('currentUser', username);
+            
+            loginMessage.textContent = `Access granted for ${username}. Redirecting...`;
+            loginMessage.className = 'message-area message-success';
+
+            // Redirect to the main application page
+            setTimeout(() => {
+                window.location.href = GAME_PAGE_FILE; 
+            }, 1000);
+        }
+
+        // --- Utility: Show only one section (login or register) ---
+        function showSection(section) {
+            loginSection.classList.add('hidden');
+            registerSection.classList.add('hidden');
+            loginMessage.textContent = '';
+            registerMessage.textContent = '';
+            
+            if (section === 'login') {
+                loginSection.classList.remove('hidden');
+                authTitle.textContent = 'USER LOGIN';
+            } else if (section === 'register') {
+                registerSection.classList.remove('hidden');
+                authTitle.textContent = 'NEW USER REGISTRATION';
+            }
+        }
+        
+        // --- 2. EMAIL REGISTRATION HANDLER ---
+        registerForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('reg-email').value.trim();
+            const password = document.getElementById('reg-password').value.trim();
+            
+            registerMessage.textContent = 'Processing registration...';
+            registerMessage.className = 'message-area message-info';
+
+            try {
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                
+                registerMessage.textContent = `Success! User ${email} created. Proceeding to login.`;
+                registerMessage.className = 'message-area message-success';
+                
+                // Use the successful user object to set the session
+                handleSuccessfulLogin(userCredential.user);
+                
+            } catch (error) {
+                // Firebase error handling
+                registerMessage.textContent = `Error: ${error.message.split(' (')[0]}`;
+                registerMessage.className = 'message-area message-error';
+            }
+        });
+
+        // --- 3. EMAIL LOGIN HANDLER ---
+        loginForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value.trim();
+            
+            loginMessage.textContent = 'Authenticating...';
+            loginMessage.className = 'message-area message-info';
+
+            try {
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                
+                // Use the successful user object to set the session
+                handleSuccessfulLogin(userCredential.user);
+
+            } catch (error) {
+                // Firebase error handling
+                loginMessage.textContent = `Access denied. ${error.message.split(' (')[0]}`;
+                loginMessage.className = 'message-area message-error';
+            }
+        });
+
+        // --- 4. GOOGLE SIGN-IN HANDLER ---
+        googleLoginBtn.addEventListener('click', async () => {
+            loginMessage.textContent = 'Signing in with Google...';
+            loginMessage.className = 'message-area message-info';
+
+            try {
+                // Sign in using a pop-up window
+                const result = await auth.signInWithPopup(googleProvider);
+                
+                // Use the successful user object to set the session
+                handleSuccessfulLogin(result.user);
+
+            } catch (error) {
+                // Handle user closing the popup or other errors
+                if (error.code !== 'auth/popup-closed-by-user') {
+                    loginMessage.textContent = `Google Sign-in failed: ${error.message.split(' (')[0]}`;
+                    loginMessage.className = 'message-area message-error';
+                } else {
+                    loginMessage.textContent = 'Authentication process cancelled.';
+                    loginMessage.className = 'message-area message-info';
+                }
+            }
+        });
+
+
+        // --- Initial Load Check (Firebase monitors session state) ---
+        document.addEventListener('DOMContentLoaded', () => {
+            auth.onAuthStateChanged(user => {
+                if (user) {
+                    // Firebase detected a valid session, redirect immediately
+                    handleSuccessfulLogin(user);
+                    return;
+                }
+                
+                // If the user lands here and is NOT logged in, show the login form
+                showSection('login'); 
+            });
+        });
+    </script>
+</body>
+</html>
